@@ -1,0 +1,33 @@
+from dataclasses import dataclass
+
+from models.Preprocessing.DeserializedObjects.PreOp.PrecipitatingFactors import PrecipitatingFactors
+from models.Preprocessing.Deserializers.BaseDeserializer import BaseDeserializer
+from models.Preprocessing.Utils.DeserializerHelper import XMLDeserializerHelper
+
+
+@dataclass
+class PrecipitatingFactorsDeserializer(BaseDeserializer):
+    def deserialize(self) -> PrecipitatingFactors:
+        items = {
+            'expected_op_duration': 'QVDELIN044',
+            'abdominal_procedure': 'QVDELIN045',
+            'intrathoracic_procedure': 'QVDELIN046',
+            'major_surgery': 'QVDELIN047',
+            'expected_severe_postoperative_pain': 'QVDELIN048',
+            'contraindication': 'QVDELIN049',
+            'expected_transfusion_of_blood_products': 'QVDELIN050',
+        }
+
+        for key, value in items.items():
+            element_value = self._get_element_value(value)
+            items[key] = XMLDeserializerHelper.determine_yes_no_value(element_value)
+
+        return PrecipitatingFactors(
+            expected_op_duration=items['expected_op_duration'],
+            abdominal_procedure=items['abdominal_procedure'],
+            intrathoracic_procedure=items['intrathoracic_procedure'],
+            major_surgery=items['major_surgery'],
+            expected_severe_postoperative_pain=items['expected_severe_postoperative_pain'],
+            contraindication=items['contraindication'],
+            expected_transfusion_of_blood_products=items['expected_transfusion_of_blood_products']
+        )

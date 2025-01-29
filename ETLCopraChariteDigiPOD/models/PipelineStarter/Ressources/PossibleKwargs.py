@@ -1,0 +1,30 @@
+possibleKwargs = {
+    "token": ("",),
+    "action": ("import", "export", "delete", "rename"),
+    "content": (
+        "repeatingFormsEvents", "arm", "dag", "userDagMapping",
+        "event", "exportFieldNames", "file", "instrument", "record",
+        "surveyLink", "userRole", "userRoleMapping", "user", "event"
+    ),
+    r"records": ("",),
+    r"fields": ("",),
+    r"forms": ("",),
+    r"events": ("",),
+    "format": ("csv", "json", "xml", "odm"),
+    "type": ("flat", "eav"),
+    "overwriteBehavior": ("false", "true"),
+    "dateFormat": ("YMD", "MDY", "DMY"),
+    "returnFormat": ("csv", "json", "xml"),
+    "csvDelimiter": ("",),
+    "returnContent": ("count",),
+    "forceAutoNumber": ("false", "true"),
+    "rawOrLabel": ("raw", "label"),
+    "rawOrLabelHeaders": ("raw", "label"),
+    "exportSurveyFields": ("false", "true"),
+    "exportDataAccessGroups": ("false", "true"),
+    "decimalCharacter": (",", "."),
+    "exportBlankForGrayFormStatus": ("false", "true"),
+    "filterLogic": ("",),
+    "dateRangeBegin": ("",),
+    "dateRangeEnd": ("",)
+}

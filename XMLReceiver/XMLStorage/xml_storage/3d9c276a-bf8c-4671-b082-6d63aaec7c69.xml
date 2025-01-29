@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="utf-16"?>
+<DOCUMENT xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <EINWILLIGUNGSSTATUS>
+    <EINRI VALUE="0001" />
+    <FALNR VALUE="0317737506" />
+    <STATUS VALUE="" />
+    <LNRLS VALUE="1437047359" />
+  </EINWILLIGUNGSSTATUS>
+  <MAIN_DOC>
+    <MAIN_DOC_KEY>
+      <DOKNR VALUE="" />
+    </MAIN_DOC_KEY>
+    <MAIN_DOC_METADATA>
+      <EINRI VALUE="0001" />
+      <PATNR VALUE="0043030869" />
+      <FALNR VALUE="0317737506" />
+      <ORGDO VALUE="WZOP" />
+      <MITARB VALUE="HOFFL" />
+      <DTID VALUE="QV_DELIR_H" />
+      <DTVERS VALUE="0001" />
+      <DODAT VALUE="20241010" />
+      <DOTIM VALUE="160856" />
+    </MAIN_DOC_METADATA>
+    <MAIN_DOC_CONTENT>
+      <QVDELIN172>
+        <ITEM>
+          <QVDELIN173 VALUE="Drainage (Foley)" />
+          <QVDELIN174 VALUE="20241017" />
+          <QVDELIN175 VALUE="00:00:01" />
+          <QVDELIH180 VALUE="20241010" />
+          <QVDELIH181 VALUE="16:08:56" />
+          <QVDELIN179 VALUE=" " />
+        </ITEM>
+        <ITEM>
+          <QVDELIN173 VALUE="Venenkatheter, peripher" />
+          <QVDELIN174 VALUE="20241017" />
+          <QVDELIN175 VALUE="00:00:01" />
+          <QVDELIH180 VALUE="20241010" />
+          <QVDELIH181 VALUE="16:08:56" />
+          <QVDELIN179 VALUE=" " />
+        </ITEM>
+        <ITEM>
+          <QVDELIN173 VALUE="Drainage (Sonstige)" />
+          <QVDELIN174 VALUE="20241017" />
+          <QVDELIN175 VALUE="00:00:01" />
+          <QVDELIH180 VALUE="20241010" />
+          <QVDELIH181 VALUE="16:08:56" />
+          <QVDELIN179 VALUE=" " />
+        </ITEM>
+      </QVDELIN172>
+    </MAIN_DOC_CONTENT>
+  </MAIN_DOC>
+  <SUB_DOC>
+    <SUB_DOC_METADATA>
+      <EINRI VALUE="0001" />
+      <PATNR VALUE="0043030869" />
+      <FALNR VALUE="0317737506" />
+      <ORGDO VALUE="WZOP" />
+      <MITARB VALUE="HOFFL" />
+      <DTID VALUE="QV_DELIR_N" />
+      <DTVERS VALUE="0001" />
+      <DODAT VALUE="20241010" />
+      <DOTIM VALUE="160856" />
+      <LOEKZ />
+      <EXTNR VALUE="COPRA32881103" />
+      <LNRLS VALUE="1437047359" />
+    </SUB_DOC_METADATA>
+    <SUB_DOC_CONTENT>
+      <QVDELIN002 VALUE="POST" />
+      <QVDELIN066 VALUE="X" />
+      <QVDELIN069 VALUE="X" />
+      <QVDELIN157 />
+      <QVDELIN278 VALUE=" " />
+      <QVDELIN279 VALUE=" " />
+      <QVDELIN280 VALUE=" " />
+      <QVDELIN281 VALUE=" " />
+      <QVDELIN151 />
+      <QVDELIN071>
+        <ITEM>
+          <QVDELIN072 VALUE="1" />
+          <QVDELIN073 VALUE="6&#xA;(Delir)" />
+          <QVDELIN074 VALUE="20241010" />
+          <QVDELIN075 VALUE="16:08:56" />
+          <QVDELIN325 VALUE="6" />
+          <QVDELIN065 VALUE="1" />
+          <QVDELIN067 VALUE="2" />
+          <QVDELIN068 VALUE="1" />
+          <QVDELIN070 VALUE="2" />
+          <QVDELIN081 VALUE="0" />
+        </ITEM>
+        <ITEM>
+          <QVDELIN072 VALUE="2" />
+          <QVDELIN073 VALUE="Kein Delir" />
+          <QVDELIN074 VALUE="20241010" />
+          <QVDELIN075 VALUE="16:08:56" />
+          <QVDELIN325 VALUE="1" />
+          <QVDELIN086 VALUE="J" />
+          <QVDELIN088 VALUE="8" />
+        </ITEM>
+        <ITEM>
+          <QVDELIN072 VALUE="3" />
+          <QVDELIN073 VALUE="2" />
+          <QVDELIN074 VALUE="20241010" />
+          <QVDELIN075 VALUE="16:08:56" />
+          <QVDELIN325 VALUE="2" />
+          <QVDELIN094 VALUE="2" />
+        </ITEM>
+        <ITEM>
+          <QVDELIN072 VALUE="4" />
+          <QVDELIN073 VALUE="12" />
+          <QVDELIN074 VALUE="20241010" />
+          <QVDELIN075 VALUE="16:08:56" />
+          <QVDELIN325 VALUE="12" />
+          <QVDELIN095 VALUE="3" />
+          <QVDELIN096 VALUE="4" />
+          <QVDELIN097 VALUE="5" />
+        </ITEM>
+        <ITEM>
+          <QVDELIN072 VALUE="5" />
+          <QVDELIN073 VALUE="5" />
+          <QVDELIN074 VALUE="20241010" />
+          <QVDELIN075 VALUE="16:08:56" />
+          <QVDELIN325 VALUE="5" />
+          <QVDELIN098 VALUE="1" />
+          <QVDELIN099 VALUE="2" />
+          <QVDELIN100 VALUE="0" />
+          <QVDELIN101 VALUE="0" />
+          <QVDELIN102 VALUE="1" />
+          <QVDELIN103 VALUE="0" />
+          <QVDELIN104 VALUE="1" />
+          <QVDELIN105 VALUE="1" />
+        </ITEM>
+        <ITEM>
+          <QVDELIN072 VALUE="6" />
+          <QVDELIN073 VALUE="19&#xA;(Delir)" />
+          <QVDELIN074 VALUE="20241010" />
+          <QVDELIN075 VALUE="16:08:56" />
+          <QVDELIN325 VALUE="19" />
+          <QVDELIN106 VALUE="1" />
+          <QVDELIN107 VALUE="1" />
+          <QVDELIN108 VALUE="1" />
+          <QVDELIN109 VALUE="4" />
+          <QVDELIN110 VALUE="7" />
+          <QVDELIN111 VALUE="4" />
+          <QVDELIN112 VALUE="0" />
+          <QVDELIN113 VALUE="1" />
+        </ITEM>
+        <ITEM>
+          <QVDELIN072 VALUE="7" />
+          <QVDELIN073 VALUE="5&#xA;(Delir)" />
+          <QVDELIN074 VALUE="20241010" />
+          <QVDELIN075 VALUE="16:08:56" />
+          <QVDELIN325 VALUE="5" />
+          <QVDELIN114 VALUE="1" />
+          <QVDELIN115 VALUE="1" />
+          <QVDELIN116 VALUE="0" />
+          <QVDELIN117 VALUE="1" />
+          <QVDELIN118 VALUE="0" />
+          <QVDELIN119 VALUE="0" />
+          <QVDELIN121 VALUE="1" />
+          <QVDELIN122 VALUE="1" />
+        </ITEM>
+      </QVDELIN071>
+      <QVDELIN133 />
+    </SUB_DOC_CONTENT>
+  </SUB_DOC>
+</DOCUMENT>

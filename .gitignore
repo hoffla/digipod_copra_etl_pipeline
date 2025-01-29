@@ -1,0 +1,8 @@
+.env
+*.log
+*.db
+Dockerfile
+*.yml
+*.parquet
+*.csv
+*.json

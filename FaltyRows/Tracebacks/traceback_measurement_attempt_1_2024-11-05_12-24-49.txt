@@ -1,0 +1,56 @@
+Traceback (most recent call last):
+  File "/data01/environments/REDCapETLPipeline/lib/python3.10/site-packages/sqlalchemy/engine/base.py", line 2118, in _exec_insertmany_context
+    dialect.do_execute(
+  File "/data01/environments/REDCapETLPipeline/lib/python3.10/site-packages/sqlalchemy/engine/default.py", line 941, in do_execute
+    cursor.execute(statement, parameters)
+psycopg2.errors.ForeignKeyViolation: insert or update on table "measurement" violates foreign key constraint "fpk_measurement_person_id"
+DETAIL:  Key (person_id)=(2481171) is not present in table "person".
+
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/data01/digipodFlaskServer/ETLCopraChariteDigiPOD/models/Utils/SQLInteractor.py", line 196, in updateTable
+    func(df)
+  File "/data01/digipodFlaskServer/ETLCopraChariteDigiPOD/models/Utils/SQLInteractor.py", line 244, in _attempt_export
+    exportTable(joinedTable, self.tableName, self.sqlEngine, self.schema)
+  File "/data01/digipodFlaskServer/ETLCopraChariteDigiPOD/models/Utils/SQLInteractor.py", line 169, in exportTable
+    df.to_sql(tableName, con=conn, schema=schema, if_exists="append", index=False)
+  File "/data01/environments/REDCapETLPipeline/lib/python3.10/site-packages/pandas/util/_decorators.py", line 333, in wrapper
+    return func(*args, **kwargs)
+  File "/data01/environments/REDCapETLPipeline/lib/python3.10/site-packages/pandas/core/generic.py", line 3087, in to_sql
+    return sql.to_sql(
+  File "/data01/environments/REDCapETLPipeline/lib/python3.10/site-packages/pandas/io/sql.py", line 842, in to_sql
+    return pandas_sql.to_sql(
+  File "/data01/environments/REDCapETLPipeline/lib/python3.10/site-packages/pandas/io/sql.py", line 2018, in to_sql
+    total_inserted = sql_engine.insert_records(
+  File "/data01/environments/REDCapETLPipeline/lib/python3.10/site-packages/pandas/io/sql.py", line 1567, in insert_records
+    raise err
+  File "/data01/environments/REDCapETLPipeline/lib/python3.10/site-packages/pandas/io/sql.py", line 1558, in insert_records
+    return table.insert(chunksize=chunksize, method=method)
+  File "/data01/environments/REDCapETLPipeline/lib/python3.10/site-packages/pandas/io/sql.py", line 1119, in insert
+    num_inserted = exec_insert(conn, keys, chunk_iter)
+  File "/data01/environments/REDCapETLPipeline/lib/python3.10/site-packages/pandas/io/sql.py", line 1010, in _execute_insert
+    result = conn.execute(self.table.insert(), data)
+  File "/data01/environments/REDCapETLPipeline/lib/python3.10/site-packages/sqlalchemy/engine/base.py", line 1418, in execute
+    return meth(
+  File "/data01/environments/REDCapETLPipeline/lib/python3.10/site-packages/sqlalchemy/sql/elements.py", line 515, in _execute_on_connection
+    return connection._execute_clauseelement(
+  File "/data01/environments/REDCapETLPipeline/lib/python3.10/site-packages/sqlalchemy/engine/base.py", line 1640, in _execute_clauseelement
+    ret = self._execute_context(
+  File "/data01/environments/REDCapETLPipeline/lib/python3.10/site-packages/sqlalchemy/engine/base.py", line 1844, in _execute_context
+    return self._exec_insertmany_context(dialect, context)
+  File "/data01/environments/REDCapETLPipeline/lib/python3.10/site-packages/sqlalchemy/engine/base.py", line 2126, in _exec_insertmany_context
+    self._handle_dbapi_exception(
+  File "/data01/environments/REDCapETLPipeline/lib/python3.10/site-packages/sqlalchemy/engine/base.py", line 2355, in _handle_dbapi_exception
+    raise sqlalchemy_exception.with_traceback(exc_info[2]) from e
+  File "/data01/environments/REDCapETLPipeline/lib/python3.10/site-packages/sqlalchemy/engine/base.py", line 2118, in _exec_insertmany_context
+    dialect.do_execute(
+  File "/data01/environments/REDCapETLPipeline/lib/python3.10/site-packages/sqlalchemy/engine/default.py", line 941, in do_execute
+    cursor.execute(statement, parameters)
+sqlalchemy.exc.IntegrityError: (psycopg2.errors.ForeignKeyViolation) insert or update on table "measurement" violates foreign key constraint "fpk_measurement_person_id"
+DETAIL:  Key (person_id)=(2481171) is not present in table "person".
+
+[SQL: INSERT INTO cds_cdm.measurement (measurement_id, meas_event_field_concept_id, measurement_concept_id, measurement_date, measurement_datetime, measurement_event_id, measurement_source_concept_id, measurement_source_value, measurement_time, measurement ... 665617 characters truncated ... _number__999)s, %(value_source_value__999)s, %(visit_detail_id__999)s, %(visit_occurrence_id__999)s)]
+[parameters: {'measurement_datetime__0': Timestamp('2024-10-19 08:34:00+0000', tz='UTC'), 'unit_source_concept_id__0': None, 'measurement_date__0': datetime.date(2024, 10, 18), 'value_as_concept_id__0': 36309477.0, 'measurement_source_concept_id__0': None, 'operator_concept_id__0': None, 'unit_concept_id__0': None, 'measurement_event_id__0': None, 'value_as_number__0': None, 'provider_id__0': None, 'range_high__0': None, 'unit_source_value__0': None, 'range_low__0': None, 'value_source_value__0': 'Unmöglich', 'measurement_type_concept_id__0': 44818518, 'meas_event_field_concept_id__0': None, 'visit_detail_id__0': None, 'measurement_source_value__0': 'AT4', 'person_id__0': 11137824, 'measurement_concept_id__0': 3662219, 'visit_occurrence_id__0': None, 'measurement_id__0': 16605, 'measurement_time__0': None, 'measurement_datetime__1': Timestamp('2024-08-12 13:00:00+0000', tz='UTC'), 'unit_source_concept_id__1': None, 'measurement_date__1': datetime.date(2024, 8, 12), 'value_as_concept_id__1': 4184967.0, 'measurement_source_concept_id__1': None, 'operator_concept_id__1': None, 'unit_concept_id__1': None, 'measurement_event_id__1': None, 'value_as_number__1': None, 'provider_id__1': None, 'range_high__1': None, 'unit_source_value__1': None, 'range_low__1': None, 'value_source_value__1': '2', 'measurement_type_concept_id__1': 44818518, 'meas_event_field_concept_id__1': None, 'visit_detail_id__1': None, 'measurement_source_value__1': 'ASA Physical Status Classification', 'person_id__1': 10796382, 'measurement_concept_id__1': 4199571, 'visit_occurrence_id__1': None, 'measurement_id__1': 33953, 'measurement_time__1': None, 'measurement_datetime__2': Timestamp('2024-10-10 14:08:56+0000', tz='UTC'), 'unit_source_concept_id__2': None, 'measurement_date__2': datetime.date(2024, 10, 9), 'value_as_concept_id__2': 9191.0 ... 22900 parameters truncated ... 'measurement_concept_id__997': 2000000003, 'visit_occurrence_id__997': None, 'measurement_id__997': 12026821, 'measurement_time__997': None, 'measurement_datetime__998': Timestamp('2024-08-09 08:00:00+0000', tz='UTC'), 'unit_source_concept_id__998': None, 'measurement_date__998': datetime.date(2024, 8, 8), 'value_as_concept_id__998': 9189.0, 'measurement_source_concept_id__998': None, 'operator_concept_id__998': None, 'unit_concept_id__998': None, 'measurement_event_id__998': None, 'value_as_number__998': None, 'provider_id__998': None, 'range_high__998': None, 'unit_source_value__998': None, 'range_low__998': None, 'value_source_value__998': 'Kein Delir', 'measurement_type_concept_id__998': 44818518, 'meas_event_field_concept_id__998': None, 'visit_detail_id__998': None, 'measurement_source_value__998': 'CAM-ICU', 'person_id__998': 5192146, 'measurement_concept_id__998': 2000000017, 'visit_occurrence_id__998': None, 'measurement_id__998': 12029645, 'measurement_time__998': None, 'measurement_datetime__999': Timestamp('2024-09-04 09:02:00+0000', tz='UTC'), 'unit_source_concept_id__999': None, 'measurement_date__999': datetime.date(2024, 9, 3), 'value_as_concept_id__999': None, 'measurement_source_concept_id__999': None, 'operator_concept_id__999': None, 'unit_concept_id__999': None, 'measurement_event_id__999': None, 'value_as_number__999': 5.0, 'provider_id__999': None, 'range_high__999': None, 'unit_source_value__999': None, 'range_low__999': None, 'value_source_value__999': '5', 'measurement_type_concept_id__999': 44818518, 'meas_event_field_concept_id__999': None, 'visit_detail_id__999': None, 'measurement_source_value__999': 'Charlson Comorbidity Index', 'person_id__999': 4547430, 'measurement_concept_id__999': 2000000003, 'visit_occurrence_id__999': None, 'measurement_id__999': 12033011, 'measurement_time__999': None}]
+(Background on this error at: https://sqlalche.me/e/20/gkpj)

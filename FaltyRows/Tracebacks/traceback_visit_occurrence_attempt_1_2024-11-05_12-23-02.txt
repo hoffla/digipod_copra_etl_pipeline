@@ -1,0 +1,56 @@
+Traceback (most recent call last):
+  File "/data01/environments/REDCapETLPipeline/lib/python3.10/site-packages/sqlalchemy/engine/base.py", line 2118, in _exec_insertmany_context
+    dialect.do_execute(
+  File "/data01/environments/REDCapETLPipeline/lib/python3.10/site-packages/sqlalchemy/engine/default.py", line 941, in do_execute
+    cursor.execute(statement, parameters)
+psycopg2.errors.ForeignKeyViolation: insert or update on table "visit_occurrence" violates foreign key constraint "fpk_visit_occurrence_person_id"
+DETAIL:  Key (person_id)=(2481171) is not present in table "person".
+
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/data01/digipodFlaskServer/ETLCopraChariteDigiPOD/models/Utils/SQLInteractor.py", line 196, in updateTable
+    func(df)
+  File "/data01/digipodFlaskServer/ETLCopraChariteDigiPOD/models/Utils/SQLInteractor.py", line 244, in _attempt_export
+    exportTable(joinedTable, self.tableName, self.sqlEngine, self.schema)
+  File "/data01/digipodFlaskServer/ETLCopraChariteDigiPOD/models/Utils/SQLInteractor.py", line 169, in exportTable
+    df.to_sql(tableName, con=conn, schema=schema, if_exists="append", index=False)
+  File "/data01/environments/REDCapETLPipeline/lib/python3.10/site-packages/pandas/util/_decorators.py", line 333, in wrapper
+    return func(*args, **kwargs)
+  File "/data01/environments/REDCapETLPipeline/lib/python3.10/site-packages/pandas/core/generic.py", line 3087, in to_sql
+    return sql.to_sql(
+  File "/data01/environments/REDCapETLPipeline/lib/python3.10/site-packages/pandas/io/sql.py", line 842, in to_sql
+    return pandas_sql.to_sql(
+  File "/data01/environments/REDCapETLPipeline/lib/python3.10/site-packages/pandas/io/sql.py", line 2018, in to_sql
+    total_inserted = sql_engine.insert_records(
+  File "/data01/environments/REDCapETLPipeline/lib/python3.10/site-packages/pandas/io/sql.py", line 1567, in insert_records
+    raise err
+  File "/data01/environments/REDCapETLPipeline/lib/python3.10/site-packages/pandas/io/sql.py", line 1558, in insert_records
+    return table.insert(chunksize=chunksize, method=method)
+  File "/data01/environments/REDCapETLPipeline/lib/python3.10/site-packages/pandas/io/sql.py", line 1119, in insert
+    num_inserted = exec_insert(conn, keys, chunk_iter)
+  File "/data01/environments/REDCapETLPipeline/lib/python3.10/site-packages/pandas/io/sql.py", line 1010, in _execute_insert
+    result = conn.execute(self.table.insert(), data)
+  File "/data01/environments/REDCapETLPipeline/lib/python3.10/site-packages/sqlalchemy/engine/base.py", line 1418, in execute
+    return meth(
+  File "/data01/environments/REDCapETLPipeline/lib/python3.10/site-packages/sqlalchemy/sql/elements.py", line 515, in _execute_on_connection
+    return connection._execute_clauseelement(
+  File "/data01/environments/REDCapETLPipeline/lib/python3.10/site-packages/sqlalchemy/engine/base.py", line 1640, in _execute_clauseelement
+    ret = self._execute_context(
+  File "/data01/environments/REDCapETLPipeline/lib/python3.10/site-packages/sqlalchemy/engine/base.py", line 1844, in _execute_context
+    return self._exec_insertmany_context(dialect, context)
+  File "/data01/environments/REDCapETLPipeline/lib/python3.10/site-packages/sqlalchemy/engine/base.py", line 2126, in _exec_insertmany_context
+    self._handle_dbapi_exception(
+  File "/data01/environments/REDCapETLPipeline/lib/python3.10/site-packages/sqlalchemy/engine/base.py", line 2355, in _handle_dbapi_exception
+    raise sqlalchemy_exception.with_traceback(exc_info[2]) from e
+  File "/data01/environments/REDCapETLPipeline/lib/python3.10/site-packages/sqlalchemy/engine/base.py", line 2118, in _exec_insertmany_context
+    dialect.do_execute(
+  File "/data01/environments/REDCapETLPipeline/lib/python3.10/site-packages/sqlalchemy/engine/default.py", line 941, in do_execute
+    cursor.execute(statement, parameters)
+sqlalchemy.exc.IntegrityError: (psycopg2.errors.ForeignKeyViolation) insert or update on table "visit_occurrence" violates foreign key constraint "fpk_visit_occurrence_person_id"
+DETAIL:  Key (person_id)=(2481171) is not present in table "person".
+
+[SQL: INSERT INTO cds_cdm.visit_occurrence (visit_occurrence_id, admitted_from_concept_id, admitted_from_source_value, care_site_id, discharged_to_concept_id, discharged_to_source_value, person_id, preceding_visit_occurrence_id, provider_id, visit_concept_ ... 513183 characters truncated ... ue__999)s, %(visit_start_date__999)s, %(visit_start_datetime__999)s, %(visit_type_concept_id__999)s)]
+[parameters: {'visit_end_datetime__0': Timestamp('2024-09-30 23:59:59+0000', tz='UTC'), 'discharged_to_concept_id__0': None, 'visit_start_date__0': datetime.date(2024, 9, 29), 'discharged_to_source_value__0': None, 'person_id__0': 2588387, 'visit_concept_id__0': 9201, 'visit_end_date__0': datetime.date(2024, 9, 29), 'visit_start_datetime__0': Timestamp('2024-09-30 00:00:00+0000', tz='UTC'), 'care_site_id__0': None, 'admitted_from_concept_id__0': None, 'provider_id__0': None, 'visit_source_value__0': 'Synthetic Data', 'visit_type_concept_id__0': 44818518, 'visit_source_concept_id__0': None, 'admitted_from_source_value__0': None, 'preceding_visit_occurrence_id__0': None, 'visit_occurrence_id__0': 4965, 'visit_end_datetime__1': Timestamp('2025-02-09 23:59:59+0000', tz='UTC'), 'discharged_to_concept_id__1': None, 'visit_start_date__1': datetime.date(2025, 2, 8), 'discharged_to_source_value__1': None, 'person_id__1': 8411766, 'visit_concept_id__1': 9201, 'visit_end_date__1': datetime.date(2025, 2, 8), 'visit_start_datetime__1': Timestamp('2025-02-09 00:00:00+0000', tz='UTC'), 'care_site_id__1': None, 'admitted_from_concept_id__1': None, 'provider_id__1': None, 'visit_source_value__1': 'Synthetic Data', 'visit_type_concept_id__1': 44818518, 'visit_source_concept_id__1': None, 'admitted_from_source_value__1': None, 'preceding_visit_occurrence_id__1': None, 'visit_occurrence_id__1': 26809, 'visit_end_datetime__2': Timestamp('2024-10-12 21:59:59+0000', tz='UTC'), 'discharged_to_concept_id__2': None, 'visit_start_date__2': datetime.date(2024, 10, 12), 'discharged_to_source_value__2': None, 'person_id__2': 8411766, 'visit_concept_id__2': 9201, 'visit_end_date__2': datetime.date(2024, 10, 12), 'visit_start_datetime__2': Timestamp('2024-10-11 22:00:00+0000', tz='UTC'), 'care_site_id__2': None, 'admitted_from_concept_id__2': None, 'provider_id__2': None, 'visit_source_value__2': 'Synthetic Data', 'visit_type_concept_id__2': 44818518, 'visit_source_concept_id__2': None, 'admitted_from_source_value__2': None, 'preceding_visit_occurrence_id__2': None ... 16900 parameters truncated ... 'discharged_to_concept_id__997': None, 'visit_start_date__997': datetime.date(2024, 6, 30), 'discharged_to_source_value__997': None, 'person_id__997': 15029339, 'visit_concept_id__997': 9202, 'visit_end_date__997': datetime.date(2024, 6, 30), 'visit_start_datetime__997': Timestamp('2024-07-01 09:30:00+0000', tz='UTC'), 'care_site_id__997': None, 'admitted_from_concept_id__997': None, 'provider_id__997': None, 'visit_source_value__997': 'Anästhesieambulanz', 'visit_type_concept_id__997': 44818518, 'visit_source_concept_id__997': None, 'admitted_from_source_value__997': None, 'preceding_visit_occurrence_id__997': None, 'visit_occurrence_id__997': 11141241, 'visit_end_datetime__998': Timestamp('2024-10-04 11:00:00+0000', tz='UTC'), 'discharged_to_concept_id__998': None, 'visit_start_date__998': datetime.date(2024, 10, 3), 'discharged_to_source_value__998': None, 'person_id__998': 1889735, 'visit_concept_id__998': 2000000028, 'visit_end_date__998': datetime.date(2024, 10, 3), 'visit_start_datetime__998': Timestamp('2024-10-04 05:00:00+0000', tz='UTC'), 'care_site_id__998': None, 'admitted_from_concept_id__998': None, 'provider_id__998': None, 'visit_source_value__998': 'OP', 'visit_type_concept_id__998': 44818518, 'visit_source_concept_id__998': None, 'admitted_from_source_value__998': None, 'preceding_visit_occurrence_id__998': None, 'visit_occurrence_id__998': 11160673, 'visit_end_datetime__999': Timestamp('2024-08-05 08:25:00+0000', tz='UTC'), 'discharged_to_concept_id__999': None, 'visit_start_date__999': datetime.date(2024, 7, 28), 'discharged_to_source_value__999': None, 'person_id__999': 7774993, 'visit_concept_id__999': 9201, 'visit_end_date__999': datetime.date(2024, 8, 4), 'visit_start_datetime__999': Timestamp('2024-07-29 08:43:00+0000', tz='UTC'), 'care_site_id__999': None, 'admitted_from_concept_id__999': None, 'provider_id__999': None, 'visit_source_value__999': 'A 1.1', 'visit_type_concept_id__999': 44818518, 'visit_source_concept_id__999': None, 'admitted_from_source_value__999': None, 'preceding_visit_occurrence_id__999': None, 'visit_occurrence_id__999': 11181649}]
+(Background on this error at: https://sqlalche.me/e/20/gkpj)
