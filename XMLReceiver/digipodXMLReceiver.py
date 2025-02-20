@@ -32,8 +32,8 @@ def receive_xml():
         xml_filename = os.path.join(STORAGE_DIR, unique_filename)
 
         try:
-            #with open(xml_filename, 'wb') as xml_file:
-            #    xml_file.write(xml_data)
+            with open(xml_filename, 'wb') as xml_file:
+                xml_file.write(xml_data)
             logging.info(f"XML saved successfully as {xml_filename}")
             return "XMLFile received successfully", 200
         except OSError as e:

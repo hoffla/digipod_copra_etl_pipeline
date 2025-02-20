@@ -50,6 +50,7 @@ class OMOPExtractTransformLoad:
 
     def __get_and_mark_xmlFiles(self, from_directory="unprocessed", to_directory="quarantine", include_processed=False) -> List[str]:
         xml_files = self.xmlDirectoryManager.get_list_files(from_directory, include_processed)
+
         if xml_files:
            digi_xml_files, possibly_digi_xml_files, no_digi_xml_files = post_event('filterXMLFiles', xml_files)
            self.xmlDirectoryManager.mark_as(possibly_digi_xml_files, to_directory)

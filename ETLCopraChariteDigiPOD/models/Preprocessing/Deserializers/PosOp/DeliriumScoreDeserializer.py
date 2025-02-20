@@ -32,7 +32,6 @@ class DeliriumScoreDeserializer(BaseDeserializer):
             try:
                 if score_deserializer:
                     score = score_deserializer._deserialize()
-                    print("Score", score)
                     delirium_scores.append(score)
             except Exception as err:
                 tracebackString = "".join(traceback.format_exception(type(err), err, err.__traceback__))

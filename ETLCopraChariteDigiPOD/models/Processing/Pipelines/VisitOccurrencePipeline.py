@@ -32,8 +32,9 @@ class VisitOccurrencePipeline(BasePipeline):
             for df in self.rawData.values()
             if 'visit_datetime' in df.columns and 'casenumber' in df.columns
         ]
-
-        return pd.concat(visit_data, ignore_index=True).drop_duplicates()
+        combined_visit_data = pd.concat(visit_data, ignore_index=True).drop_duplicates()
+        combined_visit_data["visit_datetime"] = combined_visit_data["visit_datetime"].dt.tz_convert("UTC")
+        return combined_visit_data
 
     def _process_and_update_existing_patients(self, combined_df: pd.DataFrame, visit_occurrence_df: pd.DataFrame) -> pd.DataFrame:
         existing_patients_df = combined_df[combined_df['person_id'].isin(visit_occurrence_df['person_id'])]
@@ -133,7 +134,7 @@ class VisitOccurrencePipeline(BasePipeline):
         Converte colunas datetime e cria as colunas de data associadas.
         """
         for datetimeCol, dateCol in zip(['visit_start_datetime', 'visit_end_datetime'], ['visit_start_date', 'visit_end_date']):
-            df[datetimeCol] = pd.to_datetime(df[datetimeCol], format='mixed')
+            df[datetimeCol] = pd.to_datetime(df[datetimeCol], utc=True, format='mixed')
             df[dateCol] = df[datetimeCol].dt.date
         return df
 

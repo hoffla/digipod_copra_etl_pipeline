@@ -1,8 +1,10 @@
 .env
 *.log
+*.log*
 *.db
 Dockerfile
 *.yml
 *.parquet
 *.csv
 *.json
+*.xml
