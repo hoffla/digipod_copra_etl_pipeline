@@ -79,7 +79,12 @@ class Cognition(BaseDeserializedObject):
     circadian: CircadianRhythmus
 
     def to_dict(self) -> dict:
-        return {"kog_erfolgt": [self.stimulation]}
+        return {
+            "kog_erfolgt": [self.stimulation.present], 
+            "orientierung_erfolgt": [self.orientation.present],
+            "kommuni_erfolgt": [self.communication.present],
+            "circrhy_wie___1": [self.circadian.nonPharmacological.present],
+            }
 
     @property
     def name(self) -> str:

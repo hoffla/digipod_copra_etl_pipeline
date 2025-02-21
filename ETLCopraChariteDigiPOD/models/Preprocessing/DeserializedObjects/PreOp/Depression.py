@@ -19,7 +19,7 @@ class DepressionScore(BaseDeserializedObject):
     difficulty: Optional[str]
 
     def to_dict(self) -> dict:
-        return {"phq_summe": self.score}
+        return {"phq_summe": [self.score]}
 
     @property
     def name(self) -> str:

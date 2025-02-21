@@ -9,8 +9,8 @@ from models.Preprocessing.Utils.DeserializerHelper import XMLDeserializerHelper
 @dataclass
 class PolypharmazieScoreDeserializer(BaseDeserializer):
     def deserialize(self) -> PolypharmacyScore:
-        score = self._parse_long_value('QVDELIN034')
-        not_collected = XMLDeserializerHelper.determine_yes_no_value(self._get_element_value('QVDELIN416'))
+        score = self._parse_long_value('.//SUB_DOC/SUB_DOC_CONTENT/QVDELIN034')
+        not_collected = XMLDeserializerHelper.determine_yes_no_value(self._get_element_value('.//SUB_DOC/SUB_DOC_CONTENT/QVDELIN416'))
 
         return PolypharmacyScore(
             score=score,

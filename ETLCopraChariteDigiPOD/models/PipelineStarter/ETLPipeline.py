@@ -100,6 +100,7 @@ class OMOPExtractTransformLoad:
         tables = post_event('getOMOPTableNames')
 
         rawData = self.__getRawDataFrame(deserializedVisits)
+        print("PRINTING RAW DATA: ", rawData)
         for tableName in tables:
             try:
                 dependencies = self.__getDependeciesForTable(rawData, tableName)

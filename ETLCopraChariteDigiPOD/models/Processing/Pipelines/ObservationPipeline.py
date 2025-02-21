@@ -27,18 +27,30 @@ class ObservationPipeline(BasePipeline):
     Lembrar que alguns dados que estao ali em cima podem nao estar no xml!
     '''
     def process(self):
-        if self.rawData:
-            praeOp = self.__processPraeopObs(self.rawData)
-            eeg = self.__processEEG(self.rawData.get("perioop")) # Todo: virá do peri, se houver
-            dexPrev = self.__processDex(self.rawData.get('medikation_arm_2')) # Todo: ainda nao tenho nada de medicacao aqui -> deletar?
+        pass
+    
+    #    if self.rawData:
+    #        praeOp = self.__processPraedi(self.rawData.get("predispositionfactors", pd.DataFrame()))
+    #
+    #        df = self.__createDateColumns(df)
+    #        df["observation_type_concept_id"] = conceptsIDs.get("observation_type_concept_id")
+    #
+    #        processedDf = self._adaptSchema(df)
+    #
+    #        return processedDf
 
-            df = pd.concat([eeg, praeOp, dexPrev])
-            df = self.__createDateColumns(df)
-            df["observation_type_concept_id"] = conceptsIDs.get("observation_type_concept_id")
+    def __processPraedi(self, df):
+        if "praemed_rf_praedi" in df.columns:
+            df = df.loc[df['praemed_rf_praedi']].dropna()
 
-            processedDf = self._adaptSchema(df)
+            if not df.empty:
+                df = self._addPersonID(df)
+                df = self._createUniqueID(df, ['person_id', 'visit_datetime', 'praemed_rf_praedi'], self.idCol)
+                df['observation_source_value'] = 'Predisposing Risk Factors for Delirium'
+                
+                df.rename(columns={'visit_datetime': 'observation_datetime'}, inplace=True)
 
-            return processedDf
+        return df
 
     def __processPraeopObs(self, df):
         '''

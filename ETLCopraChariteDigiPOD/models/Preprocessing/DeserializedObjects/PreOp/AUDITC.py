@@ -14,7 +14,7 @@ class AlkoholkonsumScore(BaseDeserializedObject):
     years_not_drinking: Optional[int]
 
     def to_dict(self) -> dict:
-        return {"auditc": self.total_score}
+        return {"auditc": [self.total_score]}
 
     @property
     def name(self) -> str:

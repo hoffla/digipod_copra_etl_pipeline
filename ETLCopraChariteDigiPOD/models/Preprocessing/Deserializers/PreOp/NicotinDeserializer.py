@@ -9,18 +9,18 @@ from models.Preprocessing.Utils.DeserializerHelper import XMLDeserializerHelper
 @dataclass
 class NikotinkonsumScoreDeserializer(BaseDeserializer):
     def deserialize(self) -> NicotinConsumptionScore:
-        total_score = self._parse_int_value('QVDELIN378')
+        total_score = self._parse_int_value('.//SUB_DOC/SUB_DOC_CONTENT/QVDELIN378')
 
-        question1 = self._map_question1_value('QVDELIN409')
-        question1_years = self._parse_int_value('QVDELIN410')
+        question1 = self._map_question1_value('.//SUB_DOC/SUB_DOC_CONTENT/QVDELIN409')
+        question1_years = self._parse_int_value('.//SUB_DOC/SUB_DOC_CONTENT/QVDELIN410')
 
-        question2 = self._map_question2_value('QVDELIN411')
-        question2_amount = self._parse_int_value('QVDELIN412')
+        question2 = self._map_question2_value('.//SUB_DOC/SUB_DOC_CONTENT/QVDELIN411')
+        question2_amount = self._parse_int_value('.//SUB_DOC/SUB_DOC_CONTENT/QVDELIN412')
 
-        question3 = self._parse_int_value('QVDELIN413')
-        question4 = self._map_question4_value('QVDELIN414')
+        question3 = self._parse_int_value('.//SUB_DOC/SUB_DOC_CONTENT/QVDELIN413')
+        question4 = self._map_question4_value('.//SUB_DOC/SUB_DOC_CONTENT/QVDELIN414')
 
-        not_collected = XMLDeserializerHelper.determine_yes_no_value(self._get_element_value('QVDELIN415'))
+        not_collected = XMLDeserializerHelper.determine_yes_no_value(self._get_element_value('.//SUB_DOC/SUB_DOC_CONTENT/QVDELIN415'))
 
         return NicotinConsumptionScore(
             total_score=total_score,

@@ -9,9 +9,9 @@ from models.Preprocessing.Utils.DeserializerHelper import XMLDeserializerHelper
 @dataclass
 class FallRiskDeserializer(BaseDeserializer):
     def deserialize(self) -> FallRisk:
-        gestuerzt = XMLDeserializerHelper.determine_yes_no_value(self._get_element_value('QVDELIN445'))
-        anzahl = self._parse_int_value('QVDELIN446')
-        nicht_erhoben = XMLDeserializerHelper.determine_yes_no_value(self._get_element_value('QVDELIN447'))
+        gestuerzt = XMLDeserializerHelper.determine_yes_no_value(self._get_element_value('.//SUB_DOC/SUB_DOC_CONTENT/QVDELIN445'))
+        anzahl = self._parse_int_value('.//SUB_DOC/SUB_DOC_CONTENT/QVDELIN446')
+        nicht_erhoben = XMLDeserializerHelper.determine_yes_no_value(self._get_element_value('.//SUB_DOC/SUB_DOC_CONTENT/QVDELIN447'))
 
         return FallRisk(
             gestuerzt=gestuerzt,

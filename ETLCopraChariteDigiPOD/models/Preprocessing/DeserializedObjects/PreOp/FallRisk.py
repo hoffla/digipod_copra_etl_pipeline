@@ -11,7 +11,7 @@ class FallRisk(BaseDeserializedObject):
     nicht_erhoben: Optional[bool]
 
     def to_dict(self) -> dict:
-        return {"fallrisk": self.gestuerzt}
+        return {"fallrisk": [self.gestuerzt]}
 
     @property
     def name(self) -> str:

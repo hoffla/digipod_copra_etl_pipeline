@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 from typing import List, Optional
 
+from models.Preprocessing.Ressources.Ressources import IncrementalGenerator
 from models.Preprocessing.Deserializers.BaseDeserializer import BaseDeserializer
 from models.Preprocessing.DeserializedObjects.PosOp.Cognition import Cognition, CognitiveStimulation, Company, OrientationAid, \
     CommunicationAid, CircadianRhythmus, CircadianPharmacological, CircadianNonPharmacological
@@ -61,7 +62,7 @@ class CognitionDeserializer(BaseDeserializer):
         )
 
     def _deserialize_orientation(self) -> OrientationAid:
-        present = XMLDeserializerHelper.determine_yes_no_ka_value(self._get_element_value(basePath + 'QVDELIN193'))
+        present = XMLDeserializerHelper.determine_yes_no_value(self._get_element_value(basePath + 'QVDELIN193'))
         clock = XMLDeserializerHelper.determine_yes_no_value(self._get_element_value(basePath + 'QVDELIN194'))
         calender = XMLDeserializerHelper.determine_yes_no_value(self._get_element_value(basePath + 'QVDELIN195'))
         tv = XMLDeserializerHelper.determine_yes_no_value(self._get_element_value(basePath + 'QVDELIN196'))
@@ -80,7 +81,7 @@ class CognitionDeserializer(BaseDeserializer):
         )
 
     def _deserialize_communication(self) -> CommunicationAid:
-        present = XMLDeserializerHelper.determine_yes_no_ka_value(self._get_element_value(basePath + 'QVDELIN200'))
+        present = XMLDeserializerHelper.determine_yes_no_value(self._get_element_value(basePath + 'QVDELIN200'))
         vision = XMLDeserializerHelper.determine_yes_no_value(self._get_element_value(basePath + 'QVDELIN201'))
         audio = XMLDeserializerHelper.determine_yes_no_value(self._get_element_value(basePath + 'QVDELIN202'))
         tablet = XMLDeserializerHelper.determine_yes_no_value(self._get_element_value(basePath + 'QVDELIN203'))
@@ -141,15 +142,17 @@ class CognitionDeserializer(BaseDeserializer):
 
     def _deserialize_drugs(self) -> List[Drug]:
         drugs = []
+        gen = IncrementalGenerator()
 
         for i in range(1, 6):  # Supondo que existem até 5 medicamentos
-            drug_name = self._get_element_value(basePath + f'QVDELIN22{i}', 'value', nullable=True)
+            drug_name = self._get_element_value(basePath + f'QVDELIN{gen("name")}')
+
             if drug_name:
-                drug_dose = float(self._get_element_value(basePath + f'QVDELIN22{i + 1}', 'value', nullable=True) or 0)
-                drug_unit = self._get_element_value(basePath + f'QVDELIN47{i}', 'value', nullable=True)
+                drug_dose = float(self._get_element_value(basePath + f'QVDELIN{gen("dosis")}') or 0)
+                drug_unit = self._get_element_value(basePath + f'QVDELIN{gen("unit")}')
                 drug_date = DateTimeParser.parse_datetime(
-                    self._get_element_value(basePath + f'QVDELIN31{i + 9}', 'value', nullable=True),
-                    self._get_element_value(basePath + f'QVDELIN31{i + 10}', 'value', nullable=True),
+                    self._get_element_value(basePath + f'QVDELIN{gen("date")}'),
+                    self._get_element_value(basePath + f'QVDELIN{gen("time")}'),
                     f'Drug {i}'
                 )
                 drugs.append(Drug(name=drug_name, dose=drug_dose, unit=drug_unit, route='oral', datetime=drug_date))

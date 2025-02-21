@@ -14,14 +14,17 @@ from models.Utils.UniqueIDCreator import UniqueIDCreator
 
 def handle_send_email(subject, message, recipients='RECIPIENTS_EMAIL', onlyIntern=False, onlyExtern=False):
     if onlyIntern:
-        send_mail_intern(subject, message, recipients)
+        pass
+        #send_mail_intern(subject, message, recipients)
         #send_email_smtp(subject, message, recipients)
     elif onlyExtern:
-        send_email(subject, message, recipients)
+        pass
+        #send_email(subject, message, recipients)
     else:
-        send_mail_intern(subject, message, recipients)
+        pass
+        #send_mail_intern(subject, message, recipients)
         #send_email_smtp(subject, message, recipients)
-        send_email(subject, message, recipients)
+        #send_email(subject, message, recipients)
 
 
 def setup_sqldatabase_interactor_handlers():

@@ -11,32 +11,32 @@ from models.Preprocessing.Utils.DateTimeParser import DateTimeParser
 @dataclass
 class PerioOPDeserializer(BaseDeserializer):
     def deserialize(self) -> PerioOP:
-        eeg = XMLDeserializerHelper.determine_yes_no_value(self._get_element_value('QVDELIN326'))
-        regional_anaesthesia = XMLDeserializerHelper.determine_yes_no_value(self._get_element_value('QVDELIN327'))
+        eeg = XMLDeserializerHelper.determine_yes_no_value(self._get_element_value('.//SUB_DOC/SUB_DOC_CONTENT/QVDELIN326'))
+        regional_anaesthesia = XMLDeserializerHelper.determine_yes_no_value(self._get_element_value('.//SUB_DOC/SUB_DOC_CONTENT/QVDELIN327'))
 
-        fasting_drink_time = self._parse_datetime('QVDELIN058', 'QVDELIN059')
-        fasting_food_time = self._parse_datetime('QVDELIN060', 'QVDELIN061')
+        fasting_drink_time = self._parse_datetime('.//SUB_DOC/SUB_DOC_CONTENT/QVDELIN058', './/SUB_DOC/SUB_DOC_CONTENT/QVDELIN059')
+        fasting_food_time = self._parse_datetime('.//SUB_DOC/SUB_DOC_CONTENT/QVDELIN060', './/SUB_DOC/SUB_DOC_CONTENT/QVDELIN061')
 
-        high_caloric_fluid = XMLDeserializerHelper.determine_yes_no_ka_value(self._get_element_value('QVDELIN398'))
-        medication_administered = XMLDeserializerHelper.determine_yes_no_ka_value(self._get_element_value('QVDELIN062'))
+        high_caloric_fluid = XMLDeserializerHelper.determine_yes_no_ka_value(self._get_element_value('.//SUB_DOC/SUB_DOC_CONTENT/QVDELIN398'))
+        medication_administered = XMLDeserializerHelper.determine_yes_no_ka_value(self._get_element_value('.//SUB_DOC/SUB_DOC_CONTENT/QVDELIN062'))
 
-        medication_reason = self._map_value(self._get_element_value('QVDELIN328'), {
+        medication_reason = self._map_value(self._get_element_value('.//SUB_DOC/SUB_DOC_CONTENT/QVDELIN328'), {
             "A": "von Pat. abgelehnt",
             "N": "nicht angesetzt",
             "S": "Sonstiger Grund",
             "NULL": "k.A."
         })
 
-        medication = self._map_value(self._get_element_value('QVDELIN063'), {
+        medication = self._map_value(self._get_element_value('.//SUB_DOC/SUB_DOC_CONTENT/QVDELIN063'), {
             "1": "Midazolam",
             "2": "Clonidin",
             "3": "Ketanest"
         })
 
-        medication_dose = self._parse_decimal_value('QVDELIN064')
+        medication_dose = self._parse_decimal_value('.//SUB_DOC/SUB_DOC_CONTENT/QVDELIN064')
         medication_time = self._parse_datetime('QVDELIN295', 'QVDELIN296')
 
-        medication_unit = self._get_element_value('QVDELIN329')
+        medication_unit = self._get_element_value('.//SUB_DOC/SUB_DOC_CONTENT/QVDELIN329')
 
         return PerioOP(
             eeg=eeg,

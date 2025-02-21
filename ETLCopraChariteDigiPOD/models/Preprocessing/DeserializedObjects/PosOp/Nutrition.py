@@ -22,6 +22,10 @@ class Nutrition(BaseDeserializedObject):
 
     def to_dict(self) -> dict:
         return {"nutri_erfolgt": [self.present]}
+    
+    @property
+    def name(self) -> str:
+        return self.__class__.__name__.lower()
 
 
 @dataclass
@@ -33,6 +37,10 @@ class Dysphagia(BaseDeserializedObject):
 
     def to_dict(self) -> dict:
         return {"schluck_behandlung": [self.phonoaudio], "schluck_nutri_umstellung": [self.dietChange]}
+    
+    @property
+    def name(self) -> str:
+        return self.__class__.__name__.lower()
 
 
 @dataclass
@@ -45,3 +53,7 @@ class MouthHygiene(BaseDeserializedObject):
 
     def to_dict(self) -> dict:
         return {"mundhyg_erfolgt": [self.present]}
+    
+    @property
+    def name(self) -> str:
+        return self.__class__.__name__.lower()

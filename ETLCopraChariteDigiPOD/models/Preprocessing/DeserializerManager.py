@@ -8,7 +8,7 @@ from models.Preprocessing.Deserializers.PosOp.DeliriumScoreDeserializer import D
 from models.Preprocessing.Deserializers.PosOp.FearAnxietyDeserializer import AnxietyDeserializer
 from models.Preprocessing.Deserializers.PosOp.ForeignObjectsDeserializer import ForeignObjectsDeserializer
 from models.Preprocessing.Deserializers.PosOp.MobilizationDeserializer import MobilizationDeserializer
-from models.Preprocessing.Deserializers.PosOp.NutritionDeserializer import NutritionDeserializer
+from models.Preprocessing.Deserializers.PosOp.NutritionDeserializer import NutritionDeserializer, DysphagiaDeserializer, MouthHygieneDeserializer
 from models.Preprocessing.Deserializers.PosOp.PainDeserializer import PainScoreDeserializer
 from models.Preprocessing.Deserializers.PreOp.AUDITCDeserializer import AlkoholkonsumScoreDeserializer
 from models.Preprocessing.Deserializers.PreOp.AdmissionStatusDeserializer import AdmissionStatusDeserializer
@@ -28,15 +28,15 @@ from models.Preprocessing.Utils.XMLNavigator import XMLNavigator
 
 deserializers = {
     'POST': [
-        DeliriumScoreDeserializer,
-        #AnxietyDeserializer, CognitionDeserializer, DeliriumScoreDeserializer,
-        #ForeignObjectsDeserializer, MobilizationDeserializer, PainScoreDeserializer, NutritionDeserializer
+        DeliriumScoreDeserializer, AnxietyDeserializer, CognitionDeserializer, 
+        ForeignObjectsDeserializer, MobilizationDeserializer, PainScoreDeserializer, 
+        NutritionDeserializer, DysphagiaDeserializer, MouthHygieneDeserializer
     ],
-    'PRE': [
-        #AdmissionStatusDeserializer, AlkoholkonsumScoreDeserializer, DepressionScoreDeserializer,
-        #FallRiskDeserializer, FrailtyScoreDeserializer, MiniCogDeserializer,
-        #NikotinkonsumScoreDeserializer, PolypharmazieScoreDeserializer, PrecipitatingFactorsDeserializer,
-        #PredispositionDeserializer, SozialeSituationScoreDeserializer, TimedUpAndGoScoreDeserializer
+    'BASE': [
+        AdmissionStatusDeserializer, AlkoholkonsumScoreDeserializer, DepressionScoreDeserializer,
+        FallRiskDeserializer, FrailtyScoreDeserializer, MiniCogDeserializer, DeliriumScoreDeserializer,
+        NikotinkonsumScoreDeserializer, PolypharmazieScoreDeserializer, PrecipitatingFactorsDeserializer,
+        PredispositionDeserializer, SozialeSituationScoreDeserializer, TimedUpAndGoScoreDeserializer
     ],
     'PERI': [
         PerioOPDeserializer

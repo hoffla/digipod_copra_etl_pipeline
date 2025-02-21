@@ -9,19 +9,19 @@ from models.Preprocessing.Utils.DeserializerHelper import XMLDeserializerHelper
 @dataclass
 class DepressionScoreDeserializer(BaseDeserializer):
     def deserialize(self) -> DepressionScore:
-        score = self._parse_int_value('QVDELIN036')
-        not_collected = XMLDeserializerHelper.determine_yes_no_value(self._get_element_value('QVDELIN408'))
+        score = self._parse_int_value('.//SUB_DOC/SUB_DOC_CONTENT/QVDELIN036')
+        not_collected = XMLDeserializerHelper.determine_yes_no_value(self._get_element_value('.//SUB_DOC/SUB_DOC_CONTENT/QVDELIN408'))
 
-        question_a = self._map_question_value('QVDELIN459')
-        question_b = self._map_question_value('QVDELIN460')
-        question_c = self._map_question_value('QVDELIN461')
-        question_d = self._map_question_value('QVDELIN462')
-        question_e = self._map_question_value('QVDELIN463')
-        question_f = self._map_question_value('QVDELIN464')
-        question_g = self._map_question_value('QVDELIN465')
-        question_h = self._map_question_value('QVDELIN466')
+        question_a = self._map_question_value('.//SUB_DOC/SUB_DOC_CONTENT/QVDELIN459')
+        question_b = self._map_question_value('.//SUB_DOC/SUB_DOC_CONTENT/QVDELIN460')
+        question_c = self._map_question_value('.//SUB_DOC/SUB_DOC_CONTENT/QVDELIN461')
+        question_d = self._map_question_value('.//SUB_DOC/SUB_DOC_CONTENT/QVDELIN462')
+        question_e = self._map_question_value('.//SUB_DOC/SUB_DOC_CONTENT/QVDELIN463')
+        question_f = self._map_question_value('.//SUB_DOC/SUB_DOC_CONTENT/QVDELIN464')
+        question_g = self._map_question_value('.//SUB_DOC/SUB_DOC_CONTENT/QVDELIN465')
+        question_h = self._map_question_value('.//SUB_DOC/SUB_DOC_CONTENT/QVDELIN466')
 
-        difficulty = self._map_difficulty_value('QVDELIN467')
+        difficulty = self._map_difficulty_value('.//SUB_DOC/SUB_DOC_CONTENT/QVDELIN467')
 
         return DepressionScore(
             score=score,

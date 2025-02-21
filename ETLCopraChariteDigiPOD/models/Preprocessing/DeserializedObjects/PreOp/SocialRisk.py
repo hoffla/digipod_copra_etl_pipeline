@@ -17,7 +17,7 @@ class SocialSituationScore(BaseDeserializedObject):
     question_6: Optional[str]
 
     def to_dict(self) -> dict:
-        return {"sos_summe": self.total_score}
+        return {"sos_summe": [self.total_score]}
 
     @property
     def name(self) -> str:

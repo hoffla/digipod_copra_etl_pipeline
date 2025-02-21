@@ -26,7 +26,7 @@ class PredispositionFactors(BaseDeserializedObject):
     sleep_disorder: Optional[bool]
 
     def to_dict(self) -> dict:
-        return {"praemed_rf_erhebung": self.isRiskFactorsAssessed, "praemed_rf_praedi": self.isRiskFactorsAssessed}
+        return {"praemed_rf_praedi": [self.isRiskFactorsAssessed], "praemed_asa": [self.asa_grade_3]}
 
     @property
     def isRiskFactorsAssessed(self) -> int:

@@ -10,7 +10,7 @@ class TimedUpAndGoScore(BaseDeserializedObject):
     not_collected: Optional[bool]
 
     def to_dict(self) -> dict:
-        return {"tug_summe": self.value}
+        return {"tug_summe": [self.value]}
 
     @property
     def name(self) -> str:

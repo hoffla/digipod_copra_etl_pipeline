@@ -10,7 +10,7 @@ class PolypharmacyScore(BaseDeserializedObject):
     not_collected: Optional[bool]
 
     def to_dict(self) -> dict:
-        return {"polypharmacy_summe": self.score}
+        return {"polypharmacy_summe": [self.score]}
 
     @property
     def name(self) -> str:

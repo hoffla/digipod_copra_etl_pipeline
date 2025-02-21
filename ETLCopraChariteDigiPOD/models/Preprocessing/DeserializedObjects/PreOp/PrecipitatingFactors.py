@@ -14,7 +14,7 @@ class PrecipitatingFactors(BaseDeserializedObject):
     expected_transfusion_of_blood_products: bool
 
     def to_dict(self) -> dict:
-        return {"praemed_rf_erhebung": self.isRiskFactorsAssessed, "praemed_rf_praezi": self.isRiskFactorsAssessed}
+        return {"praemed_rf_praezi": [self.isRiskFactorsAssessed]}
 
     @property
     def isRiskFactorsAssessed(self) -> int:

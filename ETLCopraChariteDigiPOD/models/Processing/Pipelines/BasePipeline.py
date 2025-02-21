@@ -108,13 +108,15 @@ class BasePipeline(ABC):
     def _adaptSchema(self, *dfs) -> DataFrame:
         adaptedDfs = []
         for df in dfs:
-            if not df.empty:
+            if isinstance(df, pd.DataFrame) and not df.empty:
                 for col in self.omopColumns:
                     if not col in df.columns:
                         df[col] = None
                 adaptedDfs.append(df)
-        concatenedDf = pd.concat(adaptedDfs, ignore_index=True)
-        return concatenedDf[self.omopColumns].drop_duplicates()
+        
+        if len(adaptedDfs) > 0:
+            concatenedDf = pd.concat(adaptedDfs, ignore_index=True)
+            return concatenedDf[self.omopColumns].drop_duplicates()
 
     @staticmethod
     def _renameCols(*dfs, mapping=None) -> None:
@@ -158,8 +160,8 @@ class BasePipeline(ABC):
 
         return df, allColsToRemove
 
-    def _addOMOPConceptCols(self, df):
-        dfMeltedWithLocal = self.__meltAndAddLocalCodes(df)
+    def _addOMOPConceptCols(self, df, localJoin='variabel'):
+        dfMeltedWithLocal = self.__meltAndAddLocalCodes(df, localJoin)
         dfWithConcepts = self.__addConceptsToSourceCodes(dfMeltedWithLocal)
         dfWithStandardConcepts = self.__addStandardConceptsToConcepts(dfWithConcepts)
         dfWithConceptIDColumn = self.__addConceptIDCols(dfWithStandardConcepts)
@@ -167,9 +169,9 @@ class BasePipeline(ABC):
         df = df.merge(dfWithConceptIDColumn, how='left', on=self.idCol)
         return df
 
-    def __meltAndAddLocalCodes(self, df):
+    def __meltAndAddLocalCodes(self, df, localJoin):
         df_melted = df.melt(id_vars=[self.idCol], var_name='variabel', value_name='source_code')
-        df_meltedWithLocal = post_event('mapLocalCodeToLocal', df_melted, 'variabel')
+        df_meltedWithLocal = post_event('mapLocalCodeToLocal', df_melted, localJoin if localJoin else 'variabel')
         return df_meltedWithLocal
 
     def __addConceptsToSourceCodes(self, df):

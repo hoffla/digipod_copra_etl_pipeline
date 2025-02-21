@@ -9,19 +9,19 @@ from models.Preprocessing.Utils.DeserializerHelper import XMLDeserializerHelper
 @dataclass
 class MiniCogDeserializer(BaseDeserializer):
     def deserialize(self) -> MiniCog:
-        result = self._parse_int_value('QVDELIN029')
-        word_score = self._parse_int_value('QVDELIN338')
+        result = self._parse_int_value('.//SUB_DOC/SUB_DOC_CONTENT/QVDELIN029')
+        word_score = self._parse_int_value('.//SUB_DOC/SUB_DOC_CONTENT/QVDELIN338')
 
-        clock_score = self._map_value('QVDELIN339', {
+        clock_score = self._map_value('.//SUB_DOC/SUB_DOC_CONTENT/QVDELIN339', {
             "0": "Abnormale Uhr",
             "2": "Normale Uhr",
             "": "k.A."
         })
 
-        not_recorded = XMLDeserializerHelper.determine_yes_no_value(self._get_element_value('QVDELIN340'))
-        reason_not_recorded = self._get_element_value('QVDELIN341')
+        not_recorded = XMLDeserializerHelper.determine_yes_no_value(self._get_element_value('.//SUB_DOC/SUB_DOC_CONTENT/QVDELIN340'))
+        reason_not_recorded = self._get_element_value('.//SUB_DOC/SUB_DOC_CONTENT/QVDELIN341')
 
-        word_version = self._map_value('QVDELIN448', {
+        word_version = self._map_value('.//SUB_DOC/SUB_DOC_CONTENT/QVDELIN448', {
             "v1": "Version 1",
             "v2": "Version 2",
             "": "k.A."

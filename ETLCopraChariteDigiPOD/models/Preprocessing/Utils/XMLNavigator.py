@@ -40,9 +40,9 @@ class XMLLoader:
             if content.startswith(b'\xff\xfe') or content.startswith(b'\xfe\xff'):
                 logger.debug("BOM identified for UTF-16. Decoding xml file using UTF-16")
                 return content.decode('utf-16')
-            elif b'encoding="utf-16"' in content[:100]:
-                logger.debug("BOM not identified for UTF-16. Trying to decode xml file using UTF-16")
-                return content.decode('utf-16-le' if content[0] == 0xff else 'utf-16-be')
+            #elif b'encoding="utf-16"' in content[:100]:
+            #    logger.debug("BOM not identified for UTF-16. Trying to decode xml file using UTF-16")
+            #    return content.decode('utf-16-le' if content[0] == 0xff else 'utf-16-be')
             else:
                 logger.debug("No encoding declared; falling back to UTF-8")
                 return content.decode('utf-8')  # Default to UTF-8 if no specific encoding is declared

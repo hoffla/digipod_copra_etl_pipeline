@@ -24,7 +24,7 @@ class FrailtyScore(BaseDeserializedObject):
     not_collected: Optional[bool]
 
     def to_dict(self) -> dict:
-        return {"frailty": self.total_pathological_criteria, "frailty_criteria": self.getFrailtyCriteria}
+        return {"frailty": [self.total_pathological_criteria], "frailty_criteria": [self.getFrailtyCriteria]}
 
     @property
     def getFrailtyCriteria(self) -> str:

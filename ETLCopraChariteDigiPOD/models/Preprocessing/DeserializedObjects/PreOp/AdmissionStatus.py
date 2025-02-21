@@ -25,7 +25,7 @@ class AdmissionStatus(BaseDeserializedObject):
     writing_tablet: Optional[bool]
 
     def to_dict(self) -> dict:
-        return {"gewicht": self.gewicht, "groesse": self.groesse}
+        return {"gewicht": [self.gewicht], "groesse": [self.groesse]}
 
     @property
     def name(self) -> str:

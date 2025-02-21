@@ -14,7 +14,7 @@ class MiniCog(BaseDeserializedObject):
     word_version: Optional[str]
 
     def to_dict(self) -> dict:
-        return {"cog_minicog_sum": self.result}
+        return {"cog_minicog_sum": [self.result]}
 
     @property
     def name(self) -> str:

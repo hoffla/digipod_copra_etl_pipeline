@@ -15,3 +15,7 @@ class ForeignObject(BaseDeserializedObject):
 
     def to_dict(self) -> dict:
         return {"fremdmaterial": [self.type_], "indikationspruefung": [self.indicationproof]}
+    
+    @property
+    def name(self) -> str:
+        return self.__class__.__name__.lower()

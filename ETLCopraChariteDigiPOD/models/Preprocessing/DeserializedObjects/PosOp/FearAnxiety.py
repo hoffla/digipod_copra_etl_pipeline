@@ -59,3 +59,7 @@ class Anxiety(BaseDeserializedObject):
             "angst_bewaltigung_typ___1": [self.nonPharmacological.present],
             "angst_bewaltigung_typ___2": [self.pharmacological.present],
         }
+    
+    @property
+    def name(self) -> str:
+        return self.__class__.__name__.lower()

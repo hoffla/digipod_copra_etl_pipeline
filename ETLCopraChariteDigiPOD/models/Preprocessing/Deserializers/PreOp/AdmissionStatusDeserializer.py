@@ -5,30 +5,33 @@ from models.Preprocessing.Deserializers.BaseDeserializer import BaseDeserializer
 from models.Preprocessing.Utils.DeserializerHelper import XMLDeserializerHelper
 
 
+basePath = './/SUB_DOC/SUB_DOC_CONTENT/'
+
+
 @dataclass
 class AdmissionStatusDeserializer(BaseDeserializer):
     def deserialize(self) -> AdmissionStatus:
         mapping_dict = self._get_mappings()
+        
+        gewicht = self._parse_decimal_value(basePath + 'QVDELIN450')
+        groesse = self._parse_decimal_value(basePath + 'QVDELIN451')
 
-        gewicht = self._parse_decimal_value('QVDELIN450')
-        groesse = self._parse_long_value('QVDELIN451')
+        care_level = self._map_value(basePath + 'QVDELIN052', mapping_dict['care_level'])
+        personal_hygiene = self._map_value(basePath + 'QVDELIN053', mapping_dict['personal_hygiene'])
+        mobility = self._map_value(basePath + 'QVDELIN054', mapping_dict['mobility'])
+        nutrition = self._map_value(basePath + 'QVDELIN055', mapping_dict['nutrition'])
+        nutritional_support = self._map_value(basePath + 'QVDELIN349', mapping_dict['nutritional_support'])
 
-        care_level = self._map_value('QVDELIN052', mapping_dict['care_level'])
-        personal_hygiene = self._map_value('QVDELIN053', mapping_dict['personal_hygiene'])
-        mobility = self._map_value('QVDELIN054', mapping_dict['mobility'])
-        nutrition = self._map_value('QVDELIN055', mapping_dict['nutrition'])
-        nutritional_support = self._map_value('QVDELIN349', mapping_dict['nutritional_support'])
+        language_barrier = self._deserialize_yes_no(basePath + 'QVDELIN056')
+        communication_language = self._map_value(basePath + 'QVDELIN337', mapping_dict['communication_language'])
+        communication_language_other = self._get_element_value(basePath + 'QVDELIN057')
+        interpreter_needed = self._deserialize_yes_no(basePath + 'X00ELIN043')
 
-        language_barrier = self._deserialize_yes_no('QVDELIN056')
-        communication_language = self._map_value('QVDELIN337', mapping_dict['communication_language'])
-        communication_language_other = self._get_element_value('QVDELIN057')
-        interpreter_needed = self._deserialize_yes_no('X00ELIN043')
-
-        glasses = self._deserialize_yes_no('QVDELINHilfsmittelBrille')
-        dental_prosthesis = self._deserialize_yes_no('QVDELINHilfsmittelZahnprothese')
-        hearing_aid = self._deserialize_yes_no('QVDELINHilfsmittelHörgerät')
-        speech_aid = self._deserialize_yes_no('QVDELINHilfsmittelSprachhilfe')
-        writing_tablet = self._deserialize_yes_no('QVDELINHilfsmittelSchreibtafel')
+        glasses = self._deserialize_yes_no(basePath + 'QVDELIN026')
+        dental_prosthesis = self._deserialize_yes_no(basePath + 'QVDELIN027')
+        hearing_aid = self._deserialize_yes_no(basePath + 'QVDELIN028')
+        speech_aid = self._deserialize_yes_no(basePath + 'QVDELIN353')
+        writing_tablet = self._deserialize_yes_no(basePath + 'QVDELIN365')
 
         return AdmissionStatus(
             gewicht=gewicht,
@@ -58,8 +61,8 @@ class AdmissionStatusDeserializer(BaseDeserializer):
             'nutrition': {"0": "Selbständig", "1": "mit Hilfe", "NULL": "k.A."},
             'nutritional_support': {"1": "oral", "2": "über Magensonde", "3": "über PEG", "4": "parenteral", "NULL": "k.A."},
             'communication_language': {
-                "de": "deutsch", "tr": "türkisch", "ar": "arabisch", "it": "italienisch",
-                "es": "spanisch", "fr": "französisch", "ru": "russisch", "pl": "polnisch"
+                "DE": "deutsch", "TR": "türkisch", "AR": "arabisch", "IT": "italienisch",
+                "ES": "spanisch", "FR": "französisch", "RU": "russisch", "PL": "polnisch"
             }
         }
 

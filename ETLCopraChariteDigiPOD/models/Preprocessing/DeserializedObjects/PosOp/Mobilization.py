@@ -20,3 +20,7 @@ class Mobilization(BaseDeserializedObject):
 
     def to_dict(self) -> dict:
         return {"mobil_erfolgt": [self.present]}
+    
+    @property
+    def name(self) -> str:
+        return self.__class__.__name__.lower()

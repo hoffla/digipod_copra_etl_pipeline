@@ -41,7 +41,7 @@ if __name__ == '__main__':
             logger.critical(f"A critical error occurred during the run of ETL-Pipeline. Error: {tracebackString}")
             post_event('sendEmail', "A critical error occurred during the run of ETL-Pipeline", f"Error: {tracebackString}")
         finally:
-            time.sleep(30)
+            time.sleep(1)
 
     #start = time.time()
     #etlPipelineBuilder = StandardETLPipelineBuilder()

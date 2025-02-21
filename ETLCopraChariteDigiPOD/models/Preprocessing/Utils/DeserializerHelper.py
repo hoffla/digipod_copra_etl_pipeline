@@ -1,5 +1,5 @@
 class XMLDeserializerHelper:
-    yes_options = ["yes", "1", "X", "ok", "Y"]
+    yes_options = ["yes", "1", "X", "ok", "Y", "J"]
 
     @staticmethod
     def determine_yes_no_value(value):

@@ -24,123 +24,124 @@ procedureMapping = {
 class ProcedureOccurrencePipeline(BasePipeline):
     def process(self):
         if self.rawData:
-            posOpProcedures = self.__processPosOpProcedures(self.rawData.get('postoperative_visi_arm_2'))
-            operation = self.__processOp(self.rawData.get('operation_arm_2'))
+            cog = self.__processCognition(self.rawData.get('cognition', pd.DataFrame()))
+            anxiety = self.__processAnxiety(self.rawData.get('anxiety', pd.DataFrame()))
+            mobi = self.__processMobi(self.rawData.get('mobilization', pd.DataFrame()))
+            nutri = self.__processNutri(self.rawData.get('nutrition', pd.DataFrame()))
+            dispha = self.__processDispha(self.rawData.get('dysphagia', pd.DataFrame()))
+            mouth = self.__processMouth(self.rawData.get('mouthhygiene', pd.DataFrame()))
 
-            df = pd.concat([posOpProcedures, operation])
-
-            df["procedure_type_concept_id"] = conceptsIDs.get("procedure_type_concept_id")
-            processedDf = self._adaptSchema(df)
+            processedDf = self._adaptSchema(cog, anxiety, mobi, nutri, dispha, mouth)
+            processedDf["procedure_type_concept_id"] = conceptsIDs.get("procedure_type_concept_id")
+            processedDf = self.__createDateColumns(processedDf)
 
             return processedDf
-
-    def __processPosOpProcedures(self, df):
-        df = self._addPersonID(df)
-
-        dfsCols = [
-            ['person_id', 'angst_bewaltigung_typ___1', 'angst_bewaltigung_nichtmed_datetime'], # Quero só o com value == '1'!!
-            ['person_id', 'kog_erfolgt', 'kog_datetime'],
-            ['person_id', 'orientierung_erfolgt', 'orientierung_datetime'],
-            ['person_id', 'kommuni_erfolgt', 'kommuni_datetime'],
-            ['person_id', 'circrhy_wie___1', 'circrhy_datetime'], # Quero só o com value == '1'!!
-            ['person_id', 'mobil_erfolgt', 'mobil_datetime'],
-            ['person_id', 'nutri_erfolgt', 'nutri_datetime'],
-            ['person_id', 'schluck_behandlung', 'schluck_behandlung_datetime'],
-            ['person_id', 'schluck_nutri_umstellung', 'schluck_nutri_umstellung_datetime'],
-            ['person_id', 'mundhyg_erfolgt', 'mundhyg_datetime'],
-        ]
-
-        return self.__processDfs(df, dfsCols)
-
-    def __processDfs(self, df, dfsCols):
-        posOpsProcedures = pd.DataFrame(columns=[self.idCol, 'person_id'])
-        for dfCols in dfsCols:
-            newDf = self.__createDataframe(df, dfCols)
-            if isinstance(newDf, pd.DataFrame):
-                posOpsProcedures = pd.concat([posOpsProcedures, newDf])
-
-        posOpsProcedures['procedure_date'] = posOpsProcedures['procedure_datetime'].dt.date
-        return posOpsProcedures
-
-    def __createDataframe(self, df, cols) -> pd.DataFrame:
-        newDf = self.__extractColumnsAndDropMissings(df, cols)
-        if not newDf.empty:
-            newDf = self.__addNewColums(newDf, cols)
-            newDf = self.__createUniqueID(newDf, ['person_id', cols[2], 'procedure_source_value'], self.idCol)
-            newDf = self._addOMOPConceptCols(newDf)
-            newDf['procedure_datetime'] = pd.to_datetime(newDf[cols[2]], format='mixed')
-
-            return newDf
-
-    @staticmethod
-    def __extractColumnsAndDropMissings(df, cols):
-        return df[cols].replace('', pd.NA).dropna()
-
-    @staticmethod
-    def __addNewColums(newDf, cols):
-        newDf['procedure_source_value'] = procedureMapping.get(cols[1], 'Unknown Procedure')
-        return newDf
-
-    def __processOp(self, df):
-        df = self._addPersonID(df)
-        df = self.__separateOPSCodes(df)
-        df = self.__defineDateCols(df)
-        df = self._createUniqueID(df, ['person_id', 'procedure_date', 'redcap_repeat_instance', 'op_ops'], self.idCol)
-        df = self._addNonStandardOMOPConceptCols(df, 'op_ops')
-        df = self.__addCustomMappingOPS(df)
-        df.rename(columns={'op_ops': 'procedure_source_value', 'concept_id_1': 'procedure_source_concept_id'}, inplace=True)
+        
+    def __processCognition(self, df):
+        if not df.empty:
+            columns_to_expand = ["kog_erfolgt", "orientierung_erfolgt", "kommuni_erfolgt", "circrhy_wie___1"]
+            df = df[["visit_datetime", "casenumber"] + columns_to_expand].dropna()
+            df = self.__reshape_dataframe(df, columns_to_expand)
+            df = df[df['source_column'] != False]
+            df = self._addPersonID(df)
+            df = self._createUniqueID(df, ['person_id', 'visit_datetime', 'source_column'], self.idCol)
+            df = self._addOMOPConceptCols(df, localJoin='source_code')
+            df = self.__addMappings(df, 'source_column', procedureMapping)
+            df.rename(columns={'visit_datetime': 'procedure_datetime'}, inplace=True)
+            
+        return df
+    
+    def __processAnxiety(self, df):
+        if not df.empty:
+            df = df[["angst_bewaltigung_typ___1", "visit_datetime", "casenumber"]].dropna()
+            df = df[df["angst_bewaltigung_typ___1"] != False]
+            df = self._addPersonID(df)
+            df['source_column'] = "angst_bewaltigung_typ___1"
+            df = self._createUniqueID(df, ['person_id', 'visit_datetime', 'source_column'], self.idCol)
+            df = self._addOMOPConceptCols(df)
+            df = self.__addMappings(df, 'source_column', procedureMapping)
+            df.rename(columns={'visit_datetime': 'procedure_datetime'}, inplace=True)
 
         return df
+    
 
-    @staticmethod
-    def __separateOPSCodes(df):
-        opsExtra = df.drop(columns=['op_ops'])
-        opsExtra['op_ops_extra'] = opsExtra['op_ops_extra'].str.split(',')
-        df_exploded = opsExtra.explode('op_ops_extra')
-        df_exploded['op_ops'] = df_exploded['op_ops_extra'].str.strip()
-
-        dfSeparetedOps = pd.concat([df, df_exploded])
-        dfSeparetedOps.drop(columns=['op_ops_extra'], inplace=True)
-        dfSeparetedOps = dfSeparetedOps.reset_index(drop=True)
-        dfSeparetedOps.drop_duplicates(inplace=True)
-        return dfSeparetedOps
-
-    def __defineDateCols(self, df):
-        df = self.__convertColsToDatetime(df)
-        df = self.__defineProcedureDate(df)
-
-        df['procedure_end_datetime'] = df['op_chig_ende']
-        df['procedure_end_date'] = df['op_chig_ende'].dt.date
-        df['procedure_datetime'] = df['op_chig_beginn'].fillna(df['op_datum'])
+    def __processMobi(self, df):
+        if not df.empty:
+            df = df[["mobil_erfolgt", "visit_datetime", "casenumber"]].dropna()
+            df = df[df['mobil_erfolgt'] != False]
+            df = self._addPersonID(df)
+            df['source_column'] = "mobil_erfolgt"
+            df = self._createUniqueID(df, ['person_id', 'visit_datetime', 'source_column'], self.idCol)
+            df['value_as_concept_id'] = df["mobil_erfolgt"].map({True: conceptsIDs.get("present"), False: conceptsIDs.get("absent")})
+            df = self._addOMOPConceptCols(df)
+            df = self.__addMappings(df, 'source_column', procedureMapping)
+            df.rename(columns={'visit_datetime': 'procedure_datetime'}, inplace=True)
 
         return df
+    
 
-    @staticmethod
-    def __convertColsToDatetime(df):
-        cols = ['op_chig_ende', 'op_naht', 'op_schnitt', 'op_chig_beginn', 'op_datum']
-        for col in cols:
-            df[col] = pd.to_datetime(df[col], format='mixed') # Todo: tomar cuidado aqui! Os dados já vem aware e logo nao devem passar por pd.to_datetime
+    def __processNutri(self, df):
+        if not df.empty:
+            df = df[["nutri_erfolgt", "visit_datetime", "casenumber"]].dropna()
+            df = df[df['nutri_erfolgt'] != False]
+            df = self._addPersonID(df)
+            df['source_column'] = "nutri_erfolgt"
+            df = self._createUniqueID(df, ['person_id', 'visit_datetime', 'source_column'], self.idCol)
+            df['value_as_concept_id'] = df["nutri_erfolgt"].map({True: conceptsIDs.get("present"), False: conceptsIDs.get("absent")})
+            df = self._addOMOPConceptCols(df)
+            df = self.__addMappings(df, 'source_column', procedureMapping)
+            df.rename(columns={'visit_datetime': 'procedure_datetime'}, inplace=True)
 
         return df
+    
 
-    @staticmethod
-    def __defineProcedureDate(df):
-        df['procedure_date'] = (
-            df['op_chig_ende']
-            .fillna(df['op_naht'])
-            .fillna(df['op_schnitt'])
-            .fillna(df['op_chig_beginn'])
-            .fillna(df['op_datum'])
-        ).dt.date
+    def __processDispha(self, df):
+        if not df.empty:
+            columns_to_expand = ["schluck_behandlung", "schluck_nutri_umstellung"]
+            df = df[["visit_datetime", "casenumber"] + columns_to_expand].dropna()
+            df = self.__reshape_dataframe(df, columns_to_expand)
+            df = df[df['source_column'] != False]
+            df = self._addPersonID(df)
+            df = self._createUniqueID(df, ['person_id', 'visit_datetime', 'source_column'], self.idCol)
+            df['value_as_concept_id'] = df["value"].map({True: conceptsIDs.get("present"), False: conceptsIDs.get("absent")})
+            df = self._addOMOPConceptCols(df, localJoin='source_code')
+            df = self.__addMappings(df, 'source_column', procedureMapping)
+            df.rename(columns={'visit_datetime': 'procedure_datetime'}, inplace=True)
 
-        df = df.dropna(subset=['procedure_date'])
         return df
+    
+    def __processMouth(self, df):
+        if not df.empty:
+            df = df[["mundhyg_erfolgt", "visit_datetime", "casenumber"]].dropna()
+            df = self._addPersonID(df)
+            df['source_column'] = "mundhyg_erfolgt"
+            df = self._createUniqueID(df, ['person_id', 'visit_datetime', 'source_column'], self.idCol)
+            df['value_as_concept_id'] = df["mundhyg_erfolgt"].map({True: conceptsIDs.get("present"), False: conceptsIDs.get("absent")})
+            df = self._addOMOPConceptCols(df)
+            df = self.__addMappings(df, 'source_column', procedureMapping)
+            df.rename(columns={'visit_datetime': 'procedure_datetime'}, inplace=True)
 
+        return df
+    
     @staticmethod
-    def __addCustomMappingOPS(df):
-        df['procedure_concept_id'] = df['op_ops'].apply(
-            lambda x: conceptsIDs.get("procedure_concept_id_cardSurgery")
-            if pd.notnull(x) and re.search(r'^5-(35|36|37)[a-zA-Z]?\.', x)
-            else conceptsIDs.get("procedure_concept_id_surgery")
-        )
+    def __reshape_dataframe(df, columns_to_expand):
+        return df.melt(
+            id_vars=[col for col in df.columns if col not in columns_to_expand], 
+            value_vars=columns_to_expand, 
+            var_name="source_column", 
+            value_name="value"
+            )
+    
+    @staticmethod
+    def __createDateColumns(df):
+        df = df.dropna(subset=['procedure_datetime'])
+        df['procedure_end_datetime'] = df['procedure_datetime']
+        df['procedure_end_date'] = df['procedure_datetime'].dt.date
+        df['procedure_date'] = df['procedure_datetime'].dt.date
+        
+        return df
+    
+    @staticmethod
+    def __addMappings(df, col, mapping):
+        df['procedure_source_value'] = df[col].replace(mapping)
         return df

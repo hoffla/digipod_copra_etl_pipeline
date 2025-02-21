@@ -9,13 +9,13 @@ from models.Preprocessing.Utils.DeserializerHelper import XMLDeserializerHelper
 class PrecipitatingFactorsDeserializer(BaseDeserializer):
     def deserialize(self) -> PrecipitatingFactors:
         items = {
-            'expected_op_duration': 'QVDELIN044',
-            'abdominal_procedure': 'QVDELIN045',
-            'intrathoracic_procedure': 'QVDELIN046',
-            'major_surgery': 'QVDELIN047',
-            'expected_severe_postoperative_pain': 'QVDELIN048',
-            'contraindication': 'QVDELIN049',
-            'expected_transfusion_of_blood_products': 'QVDELIN050',
+            'expected_op_duration': './/SUB_DOC/SUB_DOC_CONTENT/QVDELIN044',
+            'abdominal_procedure': './/SUB_DOC/SUB_DOC_CONTENT/QVDELIN045',
+            'intrathoracic_procedure': './/SUB_DOC/SUB_DOC_CONTENT/QVDELIN046',
+            'major_surgery': './/SUB_DOC/SUB_DOC_CONTENT/QVDELIN047',
+            'expected_severe_postoperative_pain': './/SUB_DOC/SUB_DOC_CONTENT/QVDELIN048',
+            'contraindication': './/SUB_DOC/SUB_DOC_CONTENT/QVDELIN049',
+            'expected_transfusion_of_blood_products': './/SUB_DOC/SUB_DOC_CONTENT/QVDELIN050',
         }
 
         for key, value in items.items():

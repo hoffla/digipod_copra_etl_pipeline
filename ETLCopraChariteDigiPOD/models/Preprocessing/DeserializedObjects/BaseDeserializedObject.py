@@ -12,12 +12,15 @@ class BaseDeserializedObject(ABC):
 
     @property
     def isValidInformation(self) -> bool:
-        visitData = self.to_dict()
-        if visitData:
-            for value in visitData.values():
-                if isinstance(value, bool) or value:
-                    return True
-        return False
+        try:
+            visitData = self.to_dict()
+            if visitData:
+                for value in visitData.values():
+                    if isinstance(value, bool) or value:
+                        return True
+            return False
+        except (AttributeError, TypeError):
+            return False
 
     @property
     @abstractmethod

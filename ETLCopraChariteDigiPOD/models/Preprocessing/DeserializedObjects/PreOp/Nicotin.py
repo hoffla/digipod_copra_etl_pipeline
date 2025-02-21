@@ -16,7 +16,7 @@ class NicotinConsumptionScore(BaseDeserializedObject):
     not_collected: Optional[bool]
 
     def to_dict(self) -> dict:
-        return {"nikotin_summe": self.total_score}
+        return {"nikotin_summe": [self.total_score]}
 
     @property
     def name(self) -> str:

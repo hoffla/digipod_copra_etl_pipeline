@@ -11,8 +11,8 @@ import locale
 @dataclass
 class TimedUpAndGoScoreDeserializer(BaseDeserializer):
     def deserialize(self) -> TimedUpAndGoScore:
-        value = self._parse_decimal_value('QVDELIN037')
-        not_collected = XMLDeserializerHelper.determine_yes_no_value(self._get_element_value('QVDELIN417'))
+        value = self._parse_decimal_value('.//SUB_DOC/SUB_DOC_CONTENT/QVDELIN037')
+        not_collected = XMLDeserializerHelper.determine_yes_no_value(self._get_element_value('.//SUB_DOC/SUB_DOC_CONTENT/QVDELIN417'))
 
         return TimedUpAndGoScore(
             value=value,

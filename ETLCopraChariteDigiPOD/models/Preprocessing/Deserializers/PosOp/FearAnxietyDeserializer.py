@@ -7,39 +7,31 @@ from models.Preprocessing.DeserializedObjects.PosOp.FearAnxiety import Anxiety, 
 from models.Preprocessing.Utils.DateTimeParser import DateTimeParser
 from models.Preprocessing.Utils.DeserializerHelper import XMLDeserializerHelper
 
+basePath = './/SUB_DOC/SUB_DOC_CONTENT/'
+
+
+drugMapping = {
+    'Clonidin': {'used': 'QVDELIN278', 'dosis': 'QVDELIN282', 'einheit': 'QVDELIN470', 'datum': 'QVDELIN301', 'zeit': 'QVDELIN302'},
+    'Lorazepam': {'used': 'QVDELIN279', 'dosis': 'QVDELIN283', 'einheit': 'QVDELIN471', 'datum': 'QVDELIN303', 'zeit': 'QVDELIN304'},
+    'Lormetazepam': {'used': 'QVDELIN280', 'dosis': 'QVDELIN284', 'einheit': 'QVDELIN472', 'datum': 'QVDELIN305', 'zeit': 'QVDELIN306'},
+    'Diazepam': {'used': 'QVDELIN281', 'dosis': 'QVDELIN285', 'einheit': 'QVDELIN473', 'datum': 'QVDELIN307', 'zeit': 'QVDELIN308'},
+}
+
 
 @dataclass
 class AnxietyDeserializer(BaseDeserializer):
     def deserialize(self) -> List[Anxiety]:
-        anxiety_items = []
+        fas = self._deserialize_fas()
 
-        items = self.navigator.find_elements('.//SUB_DOC/SUB_DOC_CONTENT/QVDELIN157')
+        stress_reduction = XMLDeserializerHelper.determine_yes_no_value(self._get_element_value(basePath + 'QVDELIN159'))
 
-        for item in items:
-            anxiety = self._deserialize_anxiety(item)
-            anxiety_items.append(anxiety)
-
-        return anxiety_items
-
-    def _deserialize_anxiety(self, item_element):
-        fas_score_string = self.navigator.get_element_value(item_element.find('QVDELIN158'), 'VALUE', element_nullable=True)
-        fas_datetime_string = self.navigator.get_element_value(item_element.find('X00ELIN155'), 'VALUE', element_nullable=True)
-        fas_time_string = self.navigator.get_element_value(item_element.find('X00ELIN156'), 'VALUE', element_nullable=True)
-
-        fas_datetime = DateTimeParser.parse_datetime(fas_datetime_string, fas_time_string, 'FAS')
-        fas_score = int(fas_score_string) if fas_score_string else None
-
-        fas = FAS(score=fas_score, datetime=fas_datetime)
-
-        stress_reduction = XMLDeserializerHelper.determine_yes_no_value(self.navigator.get_element_value(item_element.find('QVDELIN159'), element_nullable=True))
-
-        nonpharma_stress_reduction = XMLDeserializerHelper.determine_yes_no_value(self.navigator.get_element_value(item_element.find('QVDELIN160'), element_nullable=True))
-        verbal_stress_reduction = XMLDeserializerHelper.determine_yes_no_value(self.navigator.get_element_value(item_element.find('QVDELIN271'), element_nullable=True))
-        integration_family = XMLDeserializerHelper.determine_yes_no_value(self.navigator.get_element_value(item_element.find('QVDELIN273'), element_nullable=True))
-        social_service = XMLDeserializerHelper.determine_yes_no_value(self.navigator.get_element_value(item_element.find('QVDELIN274'), element_nullable=True))
-        paliative_service = XMLDeserializerHelper.determine_yes_no_value(self.navigator.get_element_value(item_element.find('QVDELIN275'), element_nullable=True))
-        explanation_procedures = XMLDeserializerHelper.determine_yes_no_value(self.navigator.get_element_value(item_element.find('QVDELIN276'), element_nullable=True))
-        pat_wishes = XMLDeserializerHelper.determine_yes_no_value(self.navigator.get_element_value(item_element.find('QVDELIN277'), element_nullable=True))
+        nonpharma_stress_reduction = XMLDeserializerHelper.determine_yes_no_value(self._get_element_value(basePath + 'QVDELIN160'))
+        verbal_stress_reduction = XMLDeserializerHelper.determine_yes_no_value(self._get_element_value(basePath + 'QVDELIN271'))
+        integration_family = XMLDeserializerHelper.determine_yes_no_value(self._get_element_value(basePath + 'QVDELIN273'))
+        social_service = XMLDeserializerHelper.determine_yes_no_value(self._get_element_value(basePath + 'QVDELIN274'))
+        paliative_service = XMLDeserializerHelper.determine_yes_no_value(self._get_element_value(basePath + 'QVDELIN275'))
+        explanation_procedures = XMLDeserializerHelper.determine_yes_no_value(self._get_element_value(basePath + 'QVDELIN276'))
+        pat_wishes = XMLDeserializerHelper.determine_yes_no_value(self._get_element_value(basePath + 'QVDELIN277'))
 
         non_pharmacological = AnxietyNonPharmacological(
             present=nonpharma_stress_reduction,
@@ -51,10 +43,10 @@ class AnxietyDeserializer(BaseDeserializer):
             patWishes=pat_wishes
         )
 
-        clonidin = self._deserialize_drug(item_element, 'QVDELIN278', 'Clonidin')
-        lorazepam = self._deserialize_drug(item_element, 'QVDELIN279', 'Lorazepam')
-        lormetazepam = self._deserialize_drug(item_element, 'QVDELIN280', 'Lormetazepam')
-        diazepam = self._deserialize_drug(item_element, 'QVDELIN281', 'Diazepam')
+        clonidin = self._deserialize_drug('Clonidin')
+        lorazepam = self._deserialize_drug('Lorazepam')
+        lormetazepam = self._deserialize_drug('Lormetazepam')
+        diazepam = self._deserialize_drug('Diazepam')
 
         pharmacological = AnxietyPharmacological(
             clonidin=clonidin,
@@ -68,16 +60,39 @@ class AnxietyDeserializer(BaseDeserializer):
             stressReduction=stress_reduction,
             nonPharmacological=non_pharmacological,
             pharmacological=pharmacological,
-        )
+        )     
+    
+    def _deserialize_fas(self):
+        '''
+        Stand 21/02/2025: somente o último faz é mandado para o XML Doc, dessa forma tento apenas pegar esse elemento!
+        Como o elemento 157 sempre está presente (mesmo que vazio) utilizo o try except por que do erro dentro do parse_datetime
+        '''
+        items = self.navigator.find_elements('.//SUB_DOC/SUB_DOC_CONTENT/QVDELIN157')
 
-    def _deserialize_drug(self, item_element, drug_id, drug_name) -> Optional[Drug]:
-        drug_used = XMLDeserializerHelper.determine_yes_no_value(self.navigator.get_element_value(item_element.find(drug_id), element_nullable=True))
+        for item in items:
+            try:
+                fas_score_string = self.navigator.get_element_value(item.find('QVDELIN158'), 'VALUE', element_nullable=True)
+                fas_datetime_string = self.navigator.get_element_value(item.find('X00ELIN155'), 'VALUE', element_nullable=True)
+                fas_time_string = self.navigator.get_element_value(item.find('X00ELIN156'), 'VALUE', element_nullable=True)
+
+                fas_datetime = DateTimeParser.parse_datetime(fas_datetime_string, fas_time_string, 'FAS')
+                fas_score = int(fas_score_string) if fas_score_string else None
+                fas = FAS(score=fas_score, datetime=fas_datetime)
+                return fas
+
+            except ValueError:
+                pass
+
+    def _deserialize_drug(self, drug_name) -> Optional[Drug]:
+        drugItems = drugMapping.get(drug_name)
+        drug_used = XMLDeserializerHelper.determine_yes_no_value(self._get_element_value(basePath + drugItems.get('used')))
+        
 
         if drug_used:
-            drug_dosis_string = self.navigator.get_element_value(item_element.find(f'{drug_id}Dosis'), 'VALUE')
-            drug_unit_string = self.navigator.get_element_value(item_element.find(f'{drug_id}Einheit'), 'VALUE')
-            drug_date_string = self.navigator.get_element_value(item_element.find(f'{drug_id}Datum'), 'VALUE')
-            drug_time_string = self.navigator.get_element_value(item_element.find(f'{drug_id}Zeit'), 'VALUE')
+            drug_dosis_string = self._get_element_value(basePath + drugItems.get('dosis'))
+            drug_unit_string = self._get_element_value(basePath + drugItems.get('dosis'))
+            drug_date_string = self._get_element_value(basePath + drugItems.get('datum'))
+            drug_time_string = self._get_element_value(basePath + drugItems.get('zeit'))
             drug_datetime = DateTimeParser.parse_datetime(drug_date_string, drug_time_string, drug_name)
 
             return Drug(
