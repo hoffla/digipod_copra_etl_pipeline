@@ -129,14 +129,14 @@ class StandardOMOPMapperBuilder:
         dfs = []
         sqlEngine = getOrCreateSQLEngine()
 
-        for file_name in ('CONCEPT', 'CONCEPT_RELATIONSHIP', 'SOURCE_TO_CONCEPT_MAP', 'LOCAL_TO_LOCAL_MAP'):
+        for file_name in ('SOURCE_TO_CONCEPT_MAP', 'LOCAL_TO_LOCAL_MAP'):
             if file_name in ('CONCEPT', 'CONCEPT_RELATIONSHIP'):
                 kwargs = self.__getKwargs(file_name)
                 dfs.append(post_event('importTable', file_name.lower(), sqlEngine, **kwargs))
             else:
                 dfs.append(self.__read_parquet(os.path.join(self.basePath, file_name + '.parquet')))
 
-        return OMOPConceptIDMapper(*dfs)
+        return OMOPConceptIDMapper(sqlEngine, *dfs)
 
     def buildDomainIDMapper(self):
         domainIDmap = self.__read_parquet(os.path.join(self.basePath, 'DomainIDMap' + '.parquet'))

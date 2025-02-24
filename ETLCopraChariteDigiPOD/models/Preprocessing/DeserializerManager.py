@@ -60,6 +60,7 @@ class DeserializerManager:
 
         for deserializer_class in self.deserializers:
             deserialized_obj = self.__deserialize_with(deserializer_class)
+            print(deserialized_obj)
             if isinstance(deserialized_obj, list) and deserialized_obj:
                 deserialized_objs[deserialized_obj[0].name] = deserialized_obj
 

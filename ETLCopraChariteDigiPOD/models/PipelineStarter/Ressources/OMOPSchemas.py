@@ -5,7 +5,7 @@ import pandas as pd
 
 OMOPSchemas = {
     "concept": {
-        "concept_id": "object",
+        "concept_id": pd.Int64Dtype(),
         "concept_name": "object",
         "domain_id": "object",
         "vocabulary_id": "object",
@@ -17,8 +17,8 @@ OMOPSchemas = {
         "invalid_reason": "object"
     },
     "concepts_relationship": {
-        "concept_id_1": "object",
-        "concept_id_2": "object",
+        "concept_id_1": pd.Int64Dtype(),
+        "concept_id_2": pd.Int64Dtype(),
         "relationship_id": "object",
         "valid_start_date": "datetime64[ns]",
         "valid_end_date": "datetime64[ns]",
@@ -36,7 +36,7 @@ OMOPSchemas = {
         "source_concept_id": "object",
         "source_vocabulary_id": "object",
         "source_code_description": "object",
-        "target_concept_id": "object",
+        "target_concept_id": pd.Int64Dtype(),
         "valid_start_date": "datetime64[ns]",
         "valid_end_date": "datetime64[ns]",
         "invalid_reason": "object"

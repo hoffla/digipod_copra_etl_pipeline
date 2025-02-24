@@ -79,9 +79,6 @@ class MeasurementPipeline(BasePipeline):
             df.rename(columns={'visit_datetime': 'measurement_datetime', 'cog_minicog_sum': 'value_source_value'}, inplace=True)
             df['measurement_source_value'] = measurementsMapping.get('cog_minicog_sum', 'Unknown Measurement')
 
-            print("PRINTING FINAL MINI COG DF")
-            print(df)
-
         return df
     
     def __processFrailty(self, df):

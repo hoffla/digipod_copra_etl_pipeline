@@ -56,8 +56,9 @@ class FileUpdater:
             'encoding': {'SOURCE_TO_CONCEPT_MAP': 'utf-8-sig', 'LOCAL_TO_LOCAL_MAP': 'ISO-8859-1'},
             'sep': {'CONCEPT': '\t', 'CONCEPT_RELATIONSHIP': '\t'},
             'columns': {
-                'CONCEPT': ['concept_id', 'concept_code'], 'CONCEPT_RELATIONSHIP': ["concept_id_1", "concept_id_2"],
-                'SOURCE_TO_CONCEPT_MAP': ['source_concept_id', 'source_vocabulary_id', 'target_concept_id', 'target_vocabulary_id']
+                'CONCEPT': [('concept_id', int), ('concept_code', str)], 
+                'CONCEPT_RELATIONSHIP': [("concept_id_1", int), ("concept_id_2", int)],
+                'SOURCE_TO_CONCEPT_MAP': [('source_concept_id', str), ('source_vocabulary_id', str), ('target_concept_id', int), ('target_vocabulary_id', str)]
                 }
         }
 
@@ -84,8 +85,8 @@ class FileUpdater:
 
     def __setColumnTypes(self):
         dtype = {}
-        for column in self.map['columns'].get(self.file_name, []):
-            dtype[column] = str
+        for column, colType in self.map['columns'].get(self.file_name, []):
+            dtype[column] = colType
         return dtype
 
     def __adjustColumnTypes(self, df):

@@ -27,7 +27,7 @@ setup_conceptID_domainID_handlers()
 if __name__ == '__main__':
     runMode = False if os.getenv('RUN_MODE') == 'PROD' else True
     etlPipelineBuilder = StandardETLPipelineBuilder()
-    omopETL = etlPipelineBuilder.getPipeline(debug=runMode)
+    omopETL = etlPipelineBuilder.getPipeline(debug=True)
 
     while True:
         try:

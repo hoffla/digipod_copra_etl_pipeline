@@ -19,10 +19,12 @@ class PrecipitatingFactors(BaseDeserializedObject):
     @property
     def isRiskFactorsAssessed(self) -> int:
         for value in self.__dict__.values():
-            if value:
-                return 1
-            else:
-                return 0
+            if isinstance(value, bool):
+                if value:
+                    return 1
+                else:
+                    return 0
+        return None
 
     @property
     def name(self) -> str:

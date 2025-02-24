@@ -100,12 +100,12 @@ class OMOPExtractTransformLoad:
         tables = post_event('getOMOPTableNames')
 
         rawData = self.__getRawDataFrame(deserializedVisits)
-        print("PRINTING RAW DATA: ", rawData)
+
         for tableName in tables:
             try:
                 dependencies = self.__getDependeciesForTable(rawData, tableName)
                 processedTable = self.pipelineManager.processData(dependencies, tableName)
-                post_event('updateTable', processedTable, tableName)
+                #post_event('updateTable', processedTable, tableName)
             except Exception as err:
                 self.__handleException(err, tableName, dependencies)
 

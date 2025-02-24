@@ -1,21 +1,21 @@
 import pandas as pd
+
 from dataclasses import dataclass, field
+from sqlalchemy.engine import Engine
 
 
 @dataclass
 class OMOPConceptIDMapper:
-    conceptID: pd.DataFrame
-    conceptRelationship: pd.DataFrame
+    engine: Engine
+    
     sourceToConcept: pd.DataFrame
     localToLocal: pd.DataFrame
 
-    def __post_init__(self):
-        self.__setColumnTypes(self.conceptID, ['concept_id', 'concept_code'])
-        self.__setColumnTypes(self.conceptRelationship, ["concept_id_1", "concept_id_2"])
+    concept_table: str = "concept"
+    concept_relationship_table: str = "concept_relationship"
+    relationship_id: str = "Maps to"
+    schema: str = "cds_cdm"
 
-    def __setColumnTypes(self, df, cols):
-        for column in cols:
-            df[column] = df[column].astype(str)
 
     def mapLocalCodeToLocal(self, df, conceptCol):
         df = df.merge(self.localToLocal, left_on=conceptCol, right_on='Variabelname', how='inner')
@@ -28,23 +28,71 @@ class OMOPConceptIDMapper:
         return foundConcepts
 
     def mapSourceConceptToConcepts(self, df, idCol, conceptCol):
-        foundConcepts = df.merge(self.conceptID, left_on=conceptCol, right_on='concept_code', how='inner') \
-                          .loc[:, [idCol, 'concept_id']]
-        foundConcepts.rename(columns={'concept_id': 'concept_id_1'}, inplace=True)
-        return foundConcepts
+        unique_codes = df[conceptCol].dropna().unique().tolist()
+        
+        placeholder_codes = ",".join(["%s"] * len(unique_codes))
+        query = f"""
+            SELECT CAST(concept_id AS TEXT), concept_code
+            FROM {self.schema}.{self.concept_table}
+            WHERE concept_code IN ({placeholder_codes})
+        """
+        concept_map = pd.read_sql(query, self.engine, params=unique_codes)
+
+        merged = df.merge(
+            concept_map, 
+            left_on=conceptCol, 
+            right_on='concept_code', 
+            how='inner'
+        )[[idCol, 'concept_id']]
+
+        merged.rename(columns={'concept_id': 'concept_id_1'}, inplace=True)
+        return merged
 
     def mapConceptsToStandardConcepts(self, df, idCol):
-        filteredConceptRel = self.conceptRelationship.loc[self.conceptRelationship['concept_id_1'].isin(df['concept_id_1'].unique())]
-        self.cr_dict = dict(zip(filteredConceptRel['concept_id_1'], filteredConceptRel['concept_id_2']))
-        df['concept_id'] = df['concept_id_1'].map(self.cr_dict)
-        df = df.loc[df['concept_id'].notna(), [idCol, 'concept_id']]
+        concept_ids = (
+            df['concept_id_1']
+            .dropna()
+            .unique()
+            .tolist()
+        )
 
-        filteredConceptID = self.conceptID.loc[self.conceptID['concept_id'].isin(df['concept_id'].unique())]
-        self.domain_map = dict(zip(filteredConceptID['concept_id'], filteredConceptID['domain_id']))
-        df['domain_id'] = df['concept_id'].map(self.domain_map)
-        df.rename(columns={'concept_id': 'standard_concept_id'}, inplace=True)
+        placeholder_ids = ",".join(["%s"] * len(concept_ids))
+        rel_query = f"""
+            SELECT CAST(concept_id_1 AS TEXT), concept_id_2
+            FROM {self.schema}.{self.concept_relationship_table}
+            WHERE relationship_id = %s
+              AND concept_id_1 IN ({placeholder_ids})
+        """
+        params = tuple([self.relationship_id] + concept_ids)
+        rel_df = pd.read_sql(rel_query, self.engine, params=params)
 
-        return df
+        merged = df.merge(rel_df, on='concept_id_1', how='inner')
+        merged.rename(columns={'concept_id_2': 'standard_concept_id'}, inplace=True)
+
+        unique_std_ids = (
+            merged['standard_concept_id']
+            .dropna()
+            .unique()
+            .tolist()
+        )
+
+        placeholder_std_ids = ",".join(["%s"] * len(unique_std_ids))
+        domain_query = f"""
+            SELECT concept_id, domain_id
+            FROM {self.schema}.{self.concept_table}
+            WHERE concept_id IN ({placeholder_std_ids})
+        """
+        domain_params = tuple(unique_std_ids)
+        domain_map = pd.read_sql(domain_query, self.engine, params=domain_params)
+
+        final_df = merged.merge(
+            domain_map, 
+            left_on='standard_concept_id', 
+            right_on='concept_id', 
+            how='left'
+        )[[idCol, 'standard_concept_id', 'domain_id']]
+
+        return final_df
 
 
 @dataclass

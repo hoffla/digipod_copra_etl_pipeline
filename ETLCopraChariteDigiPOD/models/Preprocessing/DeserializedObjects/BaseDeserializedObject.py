@@ -16,10 +16,10 @@ class BaseDeserializedObject(ABC):
             visitData = self.to_dict()
             if visitData:
                 for value in visitData.values():
-                    if isinstance(value, bool) or value:
-                        return True
+                    if isinstance(value, bool) or value[0]:
+                        return True 
             return False
-        except (AttributeError, TypeError):
+        except (AttributeError, TypeError, IndexError):
             return False
 
     @property
