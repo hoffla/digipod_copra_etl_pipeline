@@ -10,7 +10,7 @@ measurementsMapping = {
     'praemed_asa': 'ASA Physical Status Classification', #TODO: fazer o asa
     'cog_minicog_sum': 'Mini-Cog©',
     'frailty': 'Fried Frailty Phenotype',
-    'fas_score': 'Face Anxiety Score',
+    'angst_fas_score': 'Face Anxiety Score',
 }
 
 mappingsDelir = {
@@ -61,16 +61,16 @@ class MeasurementPipeline(BasePipeline):
             return processedDf
         
     def __processFAS(self, df):
-        if 'fas_score' in df.columns:
-            df = df[['fas_score', 'fas_datetime', 'casenumber']].dropna()
+        if 'angst_fas_score' in df.columns:
+            df = df[['angst_fas_score', 'angst_fas_datetime', 'casenumber']].dropna()
 
             if not df.empty:
                 df = self._addPersonID(df)
-                df['measurement_source_value'] = measurementsMapping.get('fas_score', 'Unknown Measurement')
-                df = self._createUniqueID(df, ['person_id', 'fas_datetime', 'fas_score', 'measurement_source_value'], self.idCol)
-                df = self._addColPerConvertion(df, 'fas_score', 'value_as_number', int)
+                df['measurement_source_value'] = measurementsMapping.get('angst_fas_score', 'Unknown Measurement')
+                df = self._createUniqueID(df, ['person_id', 'angst_fas_datetime', 'angst_fas_score', 'measurement_source_value'], self.idCol)
+                df = self._addColPerConvertion(df, 'angst_fas_score', 'value_as_number', int)
                 df = self._addOMOPConceptCols(df)
-                df.rename(columns={'fas_datetime': 'measurement_datetime', 'fas_score': 'value_source_value'}, inplace=True)
+                df.rename(columns={'angst_fas_datetime': 'measurement_datetime', 'angst_fas_score': 'value_source_value'}, inplace=True)
 
         return df  
 
