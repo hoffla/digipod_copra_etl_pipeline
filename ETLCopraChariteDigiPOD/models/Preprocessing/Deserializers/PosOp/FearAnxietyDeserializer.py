@@ -67,17 +67,18 @@ class AnxietyDeserializer(BaseDeserializer):
         Stand 21/02/2025: somente o último faz é mandado para o XML Doc, dessa forma tento apenas pegar esse elemento!
         Como o elemento 157 sempre está presente (mesmo que vazio) utilizo o try except por que do erro dentro do parse_datetime
         '''
-        items = self.navigator.find_elements('.//SUB_DOC/SUB_DOC_CONTENT/QVDELIN157')
+        items = self.navigator.find_elements('.//SUB_DOC/SUB_DOC_CONTENT/QVDELIN157/ITEM')
 
         for item in items:
             try:
                 fas_score_string = self.navigator.get_element_value(item.find('QVDELIN158'), 'VALUE', element_nullable=True)
                 fas_datetime_string = self.navigator.get_element_value(item.find('X00ELIN155'), 'VALUE', element_nullable=True)
                 fas_time_string = self.navigator.get_element_value(item.find('X00ELIN156'), 'VALUE', element_nullable=True)
-
+                
                 fas_datetime = DateTimeParser.parse_datetime(fas_datetime_string, fas_time_string, 'FAS')
                 fas_score = int(fas_score_string) if fas_score_string else None
                 fas = FAS(score=fas_score, datetime=fas_datetime)
+
                 return fas
 
             except ValueError:

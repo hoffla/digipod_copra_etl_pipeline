@@ -21,7 +21,7 @@ class Nutrition(BaseDeserializedObject):
     nausea: bool
 
     def to_dict(self) -> dict:
-        return {"nutri_erfolgt": [self.present]}
+        return {"nutri_erfolgt": [self.present], "nutri_selbst": [self.selfNutrition]}
     
     @property
     def name(self) -> str:

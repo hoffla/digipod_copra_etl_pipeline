@@ -19,7 +19,7 @@ class Mobilization(BaseDeserializedObject):
     miscellaneous: Optional[str]
 
     def to_dict(self) -> dict:
-        return {"mobil_erfolgt": [self.present]}
+        return {"mobil_erfolgt": [self.present], "mobil_selbst": [self.selfMobile]}
     
     @property
     def name(self) -> str:

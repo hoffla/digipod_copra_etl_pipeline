@@ -17,7 +17,14 @@ observationMapping = {
     'medeinzel_dex_prev': 'Use of Dexmedetomedin as prevention measure against delirium',
     'praemed_rf_praedi': 'Presence of Predisposing Risk Factors for Delirium',
     'praemed_rf_praezi': 'Presence of Precipitating Risk Factors for Delirium',
+    'mobil_selbst': 'Does the patient mobilize independently?',
+    'nutri_selbst': 'Does the patient nourish/feed themselves independently?'
+}
 
+
+observationBooleanMapping = {
+    'mobil_selbst': (conceptsIDs.get('able_walk'), conceptsIDs.get('unable_walk')),
+    'nutri_selbst': (conceptsIDs.get('able_eat'), conceptsIDs.get('unable_eat'))
 }
 
 
@@ -27,20 +34,48 @@ class ObservationPipeline(BasePipeline):
     Lembrar que alguns dados que estao ali em cima podem nao estar no xml!
     '''
     def process(self):
-        pass
-    
-    #    if self.rawData:
-    #        praeOp = self.__processPraedi(self.rawData.get("predispositionfactors", pd.DataFrame()))
-    #
-    #        df = self.__createDateColumns(df)
-    #        df["observation_type_concept_id"] = conceptsIDs.get("observation_type_concept_id")
-    #
-    #        processedDf = self._adaptSchema(df)
-    #
-    #        return processedDf
+        if self.rawData:
+            mobil = self.__processMobil(self.rawData.get('mobilization', pd.DataFrame()))
+            nutri = self.__processNutri(self.rawData.get('nutrition', pd.DataFrame()))
+            #praeOp = self.__processPraedi(self.rawData.get('predispositionfactors', pd.DataFrame()))
+
+            processedDf = self._adaptSchema(mobil, nutri)
+
+            if isinstance(processedDf, pd.DataFrame):
+                processedDf = self.__createDateColumns(processedDf)
+                processedDf['observation_type_concept_id'] = conceptsIDs.get('observation_type_concept_id')
+
+            return processedDf
+        
+    def __processNutri(self, df):
+        if 'nutri_selbst' in df.columns:
+            df = df[['nutri_selbst', 'visit_datetime', 'casenumber']].dropna()
+
+            if not df.empty:
+                df = self._addPersonID(df)
+                df = self.__addNewColums(df, 'nutri_selbst')
+                df = self._createUniqueID(df, ['person_id', 'visit_datetime', 'nutri_selbst', 'observation_source_value'], self.idCol)
+                df = self._addOMOPConceptCols(df)
+                df.rename(columns={'visit_datetime': 'observation_datetime', 'nutri_selbst': 'value_source_value'}, inplace=True)
+
+            return df
+        
+    def __processMobil(self, df):
+        if 'mobil_selbst' in df.columns:
+            df = df[['mobil_selbst', 'visit_datetime', 'casenumber']].dropna()
+
+            if not df.empty:
+                df = self._addPersonID(df)
+                df = self.__addNewColums(df, 'mobil_selbst')
+                df = self._createUniqueID(df, ['person_id', 'visit_datetime', 'mobil_selbst', 'observation_source_value'], self.idCol)
+                df = self._addOMOPConceptCols(df)
+                df.rename(columns={'visit_datetime': 'observation_datetime', 'mobil_selbst': 'value_source_value'}, inplace=True)
+
+            return df
+
 
     def __processPraedi(self, df):
-        if "praemed_rf_praedi" in df.columns:
+        if 'praemed_rf_praedi' in df.columns:
             df = df.loc[df['praemed_rf_praedi']].dropna()
 
             if not df.empty:
@@ -54,7 +89,7 @@ class ObservationPipeline(BasePipeline):
 
     def __processPraeopObs(self, df):
         '''
-        TEREI AQUI QUE CONCATERNAR AS COLUNAS DOS DOIS DATAFRAMES -> "predispositionfactors" terá as colunas "praemed_rf_erhebung" & "praemed_rf_praedi" / "precipitatingfactors" terá as colunas "praemed_rf_erhebung" & "praemed_rf_praezi"
+        TEREI AQUI QUE CONCATERNAR AS COLUNAS DOS DOIS DATAFRAMES -> 'predispositionfactors' terá as colunas 'praemed_rf_erhebung' & 'praemed_rf_praedi' / 'precipitatingfactors' terá as colunas 'praemed_rf_erhebung' & 'praemed_rf_praezi'
         isso antes de adicionar o person! Remover duplicatas
         ADICIONAR no problema de concatenao OU depois averiguacao se dataframe resultante está vazio ou nao
         '''
@@ -71,66 +106,20 @@ class ObservationPipeline(BasePipeline):
 
         return self.__processDfs(df, dfsCols)
 
-    def __processEEG(self, df):
-        df = self.__addPersonID(df)
-
-        dfsCols = [
-            (['person_id', 'op_datum', 'op_eeg_used'], False),
-            (['person_id', 'op_datum', 'op_eeg_bs_minuten'], True),
-            (['person_id', 'op_datum', 'op_eeg_bs_ratio'], True),
-        ]
-
-        return self.__processDfs(df, dfsCols)
-
-    def __processDex(self, df):
-        df = self.__addPersonID(df)
-
-        dfsCols = [
-            (['person_id', 'medeinzel_datetime_show', 'medeinzel_dex_prev'], False),
-        ]
-
-        return self.__processDfs(df, dfsCols)
-
-    def __processDfs(self, df, dfsCols):
-        praopObs = pd.DataFrame(columns=[self.idCol, 'person_id'])
-        for dfCols, asNumber in dfsCols:
-            newDf = self.__createDataframe(df, dfCols, asNumber)
-            if isinstance(newDf, pd.DataFrame):
-                praopObs = pd.concat([praopObs, newDf])
-
-        return praopObs
-
-    def __createDataframe(self, df, cols, asNumber) -> pd.DataFrame:
-        newDf = self.__extractColumnsAndDropMissings(df, cols)
-        if not newDf.empty:
-            newDf = self.__addNewColums(newDf, cols, asNumber)
-            newDf = self.__createUniqueID(newDf, ['person_id', cols[1], 'observation_source_value'], self.idCol)
-            newDf = self._addOMOPConceptCols(newDf)
-            newDf.rename(columns={cols[1]: 'observation_datetime', cols[2]: 'value_source_value'}, inplace=True)
-
-            return newDf
-
     @staticmethod
     def __extractColumnsAndDropMissings(df, cols):
         return df[cols].replace('', pd.NA).dropna()
 
     @staticmethod
-    def __addNewColums(newDf, cols, asNumber=False):
-        newDf['observation_source_value'] = observationMapping.get(cols[2], 'Unknown Observation')
+    def __addNewColums(newDf, col, asNumber=False):
+        obs_val = observationMapping.get(col, 'Unknown Observation')
+        newDf['observation_source_value'] = obs_val
 
         if asNumber:
-            newDf['value_as_number'] = newDf[cols[2]]
+            newDf['value_as_number'] = pd.to_numeric(newDf[col], errors='coerce')
         else:
-            newDf[cols[2]] = newDf[cols[2]].astype(str)
-            if cols[2] == 'praemed_asa':
-                newDf['value_as_concept_id'] = newDf[cols[2]].replace(
-                    {
-                        '1': conceptsIDs.get("asa_1"), '2': conceptsIDs.get("asa_2"), '3': conceptsIDs.get("asa_3"),
-                        '4': conceptsIDs.get("asa_4"), '5': conceptsIDs.get("asa_5"), '6': conceptsIDs.get("asa_6")
-                    })
-            else:
-                newDf['value_as_concept_id'] = newDf[cols[2]].replace(
-                    {'0': conceptsIDs.get("absent"), '1': conceptsIDs.get("present")})
+            id_for_zero, id_for_one = observationBooleanMapping.get(col, (conceptsIDs.get('absent'), conceptsIDs.get('present')))
+            newDf['value_as_concept_id'] = newDf[col].map({False: id_for_zero, True: id_for_one}).fillna(pd.NA)
 
         return newDf
 

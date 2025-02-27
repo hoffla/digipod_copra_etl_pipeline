@@ -90,7 +90,7 @@ class FileUpdater:
         return dtype
 
     def __adjustColumnTypes(self, df):
-        for column in self.map['columns'].get(self.file_name, []):
+        for column, col_type in self.map['columns'].get(self.file_name, []):
             df[column] = df[column].apply(lambda x: self.__remove_decimal(x))
         return df
 

@@ -19,7 +19,7 @@ class PainScoreDeserializer(BaseDeserializer):
         items = self.navigator.find_elements('.//SUB_DOC_CONTENT/QVDELIN133/ITEM')
 
         deserializer_map: dict[str, Callable] = {
-            'NRS': self._deserialize_nrs,
+            'NRS-V': self._deserialize_nrs,
             'BPS': self._deserialize_bps,
             'BPSNI': self._deserialize_bpsni,
             'BESD': self._deserialize_besd,
@@ -34,8 +34,8 @@ class PainScoreDeserializer(BaseDeserializer):
 
                 parsed_datetime = DateTimeParser.parse_datetime(score_date, score_time, 'X00ELIN131/X00ELIN132')
 
-                score_sum_str = self._get_element_value('QVDELIN134')
-                if not score_sum_str or not score_sum_str.isdigit() or not parsed_datetime:
+                score_sum_str = self.navigator.get_element_value(item.find('QVDELIN134'), 'VALUE')
+                if not isinstance(score_sum_str, str) or not score_sum_str.isdigit() or not parsed_datetime:
                     logger.warning(f"Invalid score format for QVDELIN134: {score_sum_str}")
                     raise ValueError
 
@@ -52,10 +52,10 @@ class PainScoreDeserializer(BaseDeserializer):
         return pain_scores
 
     def _deserialize_nrs(self, item, dt: datetime, score: int) -> NRS:
-        tolerable = XMLDeserializerHelper.determine_yes_no_value(self.navigator.get_element_value(item.find('QVDELIN135'), 'VALUE'))
-        condition = self.navigator.get_element_value(item.find('QVDELIN136'), 'VALUE')
-        local = self.navigator.get_element_value(item.find('QVDELIN137'), 'VALUE')
-        quality = self.navigator.get_element_value(item.find('QVDELIN138'), 'VALUE')
+        tolerable = XMLDeserializerHelper.determine_yes_no_value(self.navigator.get_element_value(item.find('QVDELIN135'), 'VALUE', element_nullable=True))
+        condition = self.navigator.get_element_value(item.find('QVDELIN136'), 'VALUE', element_nullable=True)
+        local = self.navigator.get_element_value(item.find('QVDELIN137'), 'VALUE', element_nullable=True)
+        quality = self.navigator.get_element_value(item.find('QVDELIN138'), 'VALUE', element_nullable=True)
 
         return NRS(
             type_='NRS',

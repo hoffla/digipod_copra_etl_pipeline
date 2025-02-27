@@ -56,6 +56,11 @@ class OMOPConceptIDMapper:
             .tolist()
         )
 
+        if not concept_ids:
+            empty_df = pd.DataFrame(columns=[idCol, 'standard_concept_id', 'domain_id'])
+            empty_df[idCol] = empty_df[idCol].astype(df[idCol].dtype)
+            return empty_df
+
         placeholder_ids = ",".join(["%s"] * len(concept_ids))
         rel_query = f"""
             SELECT CAST(concept_id_1 AS TEXT), concept_id_2

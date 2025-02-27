@@ -218,7 +218,7 @@ class NuDescScoreDeserializer(DeliriumScoreDeserializer):
         return self._process_delirium_status_from_score(score)
 
     def _process_delirium_status_from_score(self, score: int) -> str:
-        if 0 < score < 2:
+        if 0 <= score < 2:
             return 'Kein Delir'
         elif score >= 2:
             return 'Delir wahrscheinlich'

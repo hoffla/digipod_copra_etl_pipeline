@@ -105,7 +105,7 @@ class OMOPExtractTransformLoad:
             try:
                 dependencies = self.__getDependeciesForTable(rawData, tableName)
                 processedTable = self.pipelineManager.processData(dependencies, tableName)
-                #post_event('updateTable', processedTable, tableName)
+                post_event('updateTable', processedTable, tableName)
             except Exception as err:
                 self.__handleException(err, tableName, dependencies)
 

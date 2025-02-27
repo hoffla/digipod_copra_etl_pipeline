@@ -9,7 +9,8 @@ from models.Processing.Pipelines.BasePipeline import BasePipeline
 measurementsMapping = {
     'praemed_asa': 'ASA Physical Status Classification', #TODO: fazer o asa
     'cog_minicog_sum': 'Mini-Cog©',
-    'frailty': 'Fried Frailty Phenotype'
+    'frailty': 'Fried Frailty Phenotype',
+    'fas_score': 'Face Anxiety Score',
 }
 
 mappingsDelir = {
@@ -46,31 +47,52 @@ mappingsASA = {
 class MeasurementPipeline(BasePipeline):
     def process(self):
         if self.rawData:
-            df = self.__processDelirMeasurements(self.rawData.get('deliriumscore', pd.DataFrame()))
+            delir = self.__processDelirMeasurements(self.rawData.get('deliriumscore', pd.DataFrame()))
             mini_cog = self.__processMiniCog(self.rawData.get('minicog', pd.DataFrame())) # quando for usar isso mudar o nome do dicionário e do key
             asa = self.__processASA(self.rawData.get('predispositionfactors', pd.DataFrame()))
+            fas = self.__processFAS(self.rawData.get('anxiety', pd.DataFrame()))
 
-            processedDf = self._adaptSchema(df, mini_cog, asa)
-            processedDf = self.__createDateColumns(processedDf)
-            processedDf["measurement_type_concept_id"] = conceptsIDs.get("measurement_type_concept_id")
+            processedDf = self._adaptSchema(delir, mini_cog, asa, fas)
+
+            if isinstance(processedDf, pd.DataFrame):
+                processedDf = self.__createDateColumns(processedDf)
+                processedDf["measurement_type_concept_id"] = conceptsIDs.get("measurement_type_concept_id")
 
             return processedDf
+        
+    def __processFAS(self, df):
+        if 'fas_score' in df.columns:
+            df = df[['fas_score', 'fas_datetime', 'casenumber']].dropna()
+
+            if not df.empty:
+                df = self._addPersonID(df)
+                df['measurement_source_value'] = measurementsMapping.get('fas_score', 'Unknown Measurement')
+                df = self._createUniqueID(df, ['person_id', 'fas_datetime', 'fas_score', 'measurement_source_value'], self.idCol)
+                df = self._addColPerConvertion(df, 'fas_score', 'value_as_number', int)
+                df = self._addOMOPConceptCols(df)
+                df.rename(columns={'fas_datetime': 'measurement_datetime', 'fas_score': 'value_source_value'}, inplace=True)
+
+        return df  
 
     def __processDelirMeasurements(self, df):
-        if not df.empty:
+        if "delirtest_result2" in df.columns:
             df = df[["delirtest_result2", "delirtest_result", "delirtest_datetime", "delirtest_typ", "visit_datetime", "casenumber"]].dropna()
-            df = self._addPersonID(df)
-            df = self.__addMappings(df, 'delirtest_result2', mappingsDelir)
-            df = self._addColPerConvertion(df, 'delirtest_result', 'value_as_number', float)
-            df = self._createUniqueID(df, ['person_id', 'delirtest_datetime', 'delirtest_typ'], self.idCol)  # Todo: lembrar de ter que colocar o person_id (pseudonym) aqui
-            df = self._addOMOPConceptCols(df)
-            df.rename(columns={'delirtest_datetime': 'measurement_datetime', 'delirtest_typ': 'measurement_source_value', 'delirtest_result2': 'value_source_value'}, inplace=True)
+
+            if not df.empty:
+                df = self._addPersonID(df)
+                df = self.__addMappings(df, 'delirtest_result2', mappingsDelir)
+                df = self._addColPerConvertion(df, 'delirtest_result', 'value_as_number', float)
+                df = self._createUniqueID(df, ['person_id', 'delirtest_datetime', 'delirtest_typ'], self.idCol)
+                df = self._addOMOPConceptCols(df)
+                df.rename(columns={'delirtest_datetime': 'measurement_datetime', 'delirtest_typ': 'measurement_source_value', 'delirtest_result2': 'value_source_value'}, inplace=True)
 
         return df  
 
     def __processMiniCog(self, df):
-        if not df.empty:
+        if "cog_minicog_sum" in df.columns:
             df = df[["cog_minicog_sum", "visit_datetime", "casenumber"]].dropna()
+
+        if not df.empty:
             df = self._addPersonID(df)
             df['source_column'] = "cog_minicog_sum"
             df = self._addColPerConvertion(df, 'cog_minicog_sum', 'value_as_number', int)
@@ -96,7 +118,7 @@ class MeasurementPipeline(BasePipeline):
     
     def __processASA(self, df):
         if "praemed_asa" in df.columns:
-            df = df.loc[df["praemed_asa"]].dropna()
+            df = df[["praemed_asa"]].dropna()
 
             if not df.empty:
                 df = self._addPersonID(df)

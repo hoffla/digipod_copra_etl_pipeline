@@ -32,8 +32,10 @@ class ProcedureOccurrencePipeline(BasePipeline):
             mouth = self.__processMouth(self.rawData.get('mouthhygiene', pd.DataFrame()))
 
             processedDf = self._adaptSchema(cog, anxiety, mobi, nutri, dispha, mouth)
-            processedDf["procedure_type_concept_id"] = conceptsIDs.get("procedure_type_concept_id")
-            processedDf = self.__createDateColumns(processedDf)
+
+            if isinstance(processedDf, pd.DataFrame):
+                processedDf["procedure_type_concept_id"] = conceptsIDs.get("procedure_type_concept_id")
+                processedDf = self.__createDateColumns(processedDf)
 
             return processedDf
         
@@ -52,49 +54,54 @@ class ProcedureOccurrencePipeline(BasePipeline):
         return df
     
     def __processAnxiety(self, df):
-        if not df.empty:
+        if "angst_bewaltigung_typ___1" in df.columns:
             df = df[["angst_bewaltigung_typ___1", "visit_datetime", "casenumber"]].dropna()
-            df = df[df["angst_bewaltigung_typ___1"] != False]
-            df = self._addPersonID(df)
-            df['source_column'] = "angst_bewaltigung_typ___1"
-            df = self._createUniqueID(df, ['person_id', 'visit_datetime', 'source_column'], self.idCol)
-            df = self._addOMOPConceptCols(df)
-            df = self.__addMappings(df, 'source_column', procedureMapping)
-            df.rename(columns={'visit_datetime': 'procedure_datetime'}, inplace=True)
+
+            if not df.empty:
+                df = df[df["angst_bewaltigung_typ___1"] != False]
+                df = self._addPersonID(df)
+                df['source_column'] = "angst_bewaltigung_typ___1"
+                df = self._createUniqueID(df, ['person_id', 'visit_datetime', 'source_column'], self.idCol)
+                df = self._addOMOPConceptCols(df)
+                df = self.__addMappings(df, 'source_column', procedureMapping)
+                df.rename(columns={'visit_datetime': 'procedure_datetime'}, inplace=True)
 
         return df
     
-
     def __processMobi(self, df):
-        if not df.empty:
-            df = df[["mobil_erfolgt", "visit_datetime", "casenumber"]].dropna()
-            df = df[df['mobil_erfolgt'] != False]
-            df = self._addPersonID(df)
-            df['source_column'] = "mobil_erfolgt"
-            df = self._createUniqueID(df, ['person_id', 'visit_datetime', 'source_column'], self.idCol)
-            df['value_as_concept_id'] = df["mobil_erfolgt"].map({True: conceptsIDs.get("present"), False: conceptsIDs.get("absent")})
-            df = self._addOMOPConceptCols(df)
-            df = self.__addMappings(df, 'source_column', procedureMapping)
-            df.rename(columns={'visit_datetime': 'procedure_datetime'}, inplace=True)
+        if 'mobil_erfolgt' in df.columns:
+            df = df[['mobil_erfolgt', 'visit_datetime', 'casenumber']].dropna()
 
-        return df
-    
+            if not df.empty:
+                df = df[["mobil_erfolgt", "visit_datetime", "casenumber"]].dropna()
+                df = df[df['mobil_erfolgt'] != False]
+                df = self._addPersonID(df)
+                df['source_column'] = "mobil_erfolgt"
+                df = self._createUniqueID(df, ['person_id', 'visit_datetime', 'source_column'], self.idCol)
+                df['value_as_concept_id'] = df["mobil_erfolgt"].map({True: conceptsIDs.get("present"), False: conceptsIDs.get("absent")})
+                df = self._addOMOPConceptCols(df)
+                df = self.__addMappings(df, 'source_column', procedureMapping)
+                df.rename(columns={'visit_datetime': 'procedure_datetime'}, inplace=True)
+
+            return df
 
     def __processNutri(self, df):
-        if not df.empty:
-            df = df[["nutri_erfolgt", "visit_datetime", "casenumber"]].dropna()
-            df = df[df['nutri_erfolgt'] != False]
-            df = self._addPersonID(df)
-            df['source_column'] = "nutri_erfolgt"
-            df = self._createUniqueID(df, ['person_id', 'visit_datetime', 'source_column'], self.idCol)
-            df['value_as_concept_id'] = df["nutri_erfolgt"].map({True: conceptsIDs.get("present"), False: conceptsIDs.get("absent")})
-            df = self._addOMOPConceptCols(df)
-            df = self.__addMappings(df, 'source_column', procedureMapping)
-            df.rename(columns={'visit_datetime': 'procedure_datetime'}, inplace=True)
+        if 'nutri_erfolgt' in df.columns:
+            df = df[['nutri_erfolgt', 'visit_datetime', 'casenumber']].dropna()
+            
+            if not df.empty:
+                df = df[['nutri_erfolgt', 'visit_datetime', 'casenumber']].dropna()
+                df = df[df['nutri_erfolgt'] != False]
+                df = self._addPersonID(df)
+                df['source_column'] = 'nutri_erfolgt'
+                df = self._createUniqueID(df, ['person_id', 'visit_datetime', 'source_column'], self.idCol)
+                df['value_as_concept_id'] = df["nutri_erfolgt"].map({True: conceptsIDs.get('present'), False: conceptsIDs.get('absent')})
+                df = self._addOMOPConceptCols(df)
+                df = self.__addMappings(df, 'source_column', procedureMapping)
+                df.rename(columns={'visit_datetime': 'procedure_datetime'}, inplace=True)
 
-        return df
+            return df
     
-
     def __processDispha(self, df):
         if not df.empty:
             columns_to_expand = ["schluck_behandlung", "schluck_nutri_umstellung"]
