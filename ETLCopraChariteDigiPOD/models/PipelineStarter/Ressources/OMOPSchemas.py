@@ -346,7 +346,7 @@ tableDependencies = {
     'death': [],
     'procedure_occurrence': ["cognition", "anxiety", "mobilization", "nutrition", "dysphagia", "mouthhygiene"], #"foreignobject", 
     'measurement': ["deliriumscore", "painscore", "anxiety", "minicog", "frailtyScore", "predispositionfactors"],
-    'observation': ["precipitatingfactors", "predispositionfactors", "mobilization", "nutrition"],
+    'observation': ["precipitatingfactors", "predispositionfactors", "mobilization", "nutrition", "dysphagia"],
     'condition_occurrence': [],
     'drug_exposure': [],
     'device_exposure': [],

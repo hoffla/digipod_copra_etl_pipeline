@@ -36,7 +36,11 @@ class Dysphagia(BaseDeserializedObject):
     reasonDietChange: Optional[str]
 
     def to_dict(self) -> dict:
-        return {"schluck_behandlung": [self.phonoaudio], "schluck_nutri_umstellung": [self.dietChange]}
+        return {
+            "schluck_vorhanden": [self.present], 
+            "schluck_behandlung": [self.phonoaudio], 
+            "schluck_nutri_umstellung": [self.dietChange]
+            }
     
     @property
     def name(self) -> str:

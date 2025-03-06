@@ -18,13 +18,15 @@ observationMapping = {
     'praemed_rf_praedi': 'Presence of Predisposing Risk Factors for Delirium',
     'praemed_rf_praezi': 'Presence of Precipitating Risk Factors for Delirium',
     'mobil_selbst': 'Does the patient mobilize independently?',
-    'nutri_selbst': 'Does the patient nourish/feed themselves independently?'
+    'nutri_selbst': 'Does the patient nourish/feed themselves independently?',
+    'schluck_vorhanden': 'Deglution',
 }
 
 
 observationBooleanMapping = {
     'mobil_selbst': (conceptsIDs.get('able_walk'), conceptsIDs.get('unable_walk')),
-    'nutri_selbst': (conceptsIDs.get('able_eat'), conceptsIDs.get('unable_eat'))
+    'nutri_selbst': (conceptsIDs.get('able_eat'), conceptsIDs.get('unable_eat')),
+    'schluck_vorhanden': (conceptsIDs.get("able_swallow"), conceptsIDs.get("unable_swallow"))
 }
 
 
@@ -37,15 +39,29 @@ class ObservationPipeline(BasePipeline):
         if self.rawData:
             mobil = self.__processMobil(self.rawData.get('mobilization', pd.DataFrame()))
             nutri = self.__processNutri(self.rawData.get('nutrition', pd.DataFrame()))
+            deglu = self.__processDeglu(self.rawData.get('dysphagia', pd.DataFrame()))
             #praeOp = self.__processPraedi(self.rawData.get('predispositionfactors', pd.DataFrame()))
 
-            processedDf = self._adaptSchema(mobil, nutri)
+            processedDf = self._adaptSchema(mobil, nutri, deglu)
 
             if isinstance(processedDf, pd.DataFrame):
                 processedDf = self.__createDateColumns(processedDf)
                 processedDf['observation_type_concept_id'] = conceptsIDs.get('observation_type_concept_id')
 
             return processedDf
+    
+    def __processDeglu(self, df):
+        if 'schluck_vorhanden' in df.columns:
+            df = df[['schluck_vorhanden', 'visit_datetime', 'casenumber']].dropna()
+
+            if not df.empty:
+                df = self._addPersonID(df)
+                df = self.__addNewColums(df, 'schluck_vorhanden')
+                df = self._createUniqueID(df, ['person_id', 'visit_datetime', 'schluck_vorhanden', 'observation_source_value'], self.idCol)
+                df = self._addOMOPConceptCols(df)
+                df.rename(columns={'visit_datetime': 'observation_datetime', 'schluck_vorhanden': 'value_source_value'}, inplace=True)
+
+            return df
         
     def __processNutri(self, df):
         if 'nutri_selbst' in df.columns:

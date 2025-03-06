@@ -62,35 +62,20 @@ class OMOPConceptIDMapper:
             return empty_df
 
         placeholder_ids = ",".join(["%s"] * len(concept_ids))
-        rel_query = f"""
-            SELECT CAST(concept_id_1 AS TEXT), concept_id_2
-            FROM {self.schema}.{self.concept_relationship_table}
-            WHERE relationship_id = %s
-              AND concept_id_1 IN ({placeholder_ids})
-        """
-        params = tuple([self.relationship_id] + concept_ids)
-        rel_df = pd.read_sql(rel_query, self.engine, params=params)
-
-        merged = df.merge(rel_df, on='concept_id_1', how='inner')
-        merged.rename(columns={'concept_id_2': 'standard_concept_id'}, inplace=True)
-
-        unique_std_ids = (
-            merged['standard_concept_id']
-            .dropna()
-            .unique()
-            .tolist()
-        )
-
-        placeholder_std_ids = ",".join(["%s"] * len(unique_std_ids))
         domain_query = f"""
-            SELECT concept_id, domain_id
+            SELECT CAST(concept_id AS TEXT), domain_id
             FROM {self.schema}.{self.concept_table}
-            WHERE concept_id IN ({placeholder_std_ids})
+            WHERE concept_id IN ({placeholder_ids})
         """
-        domain_params = tuple(unique_std_ids)
+
+        domain_params = tuple(concept_ids)
         domain_map = pd.read_sql(domain_query, self.engine, params=domain_params)
 
-        final_df = merged.merge(
+        df['concept_id_1'] = df['concept_id_1'].astype(str)
+        df.rename(columns={'concept_id_1': 'standard_concept_id'}, inplace=True)
+        
+
+        final_df = df.merge(
             domain_map, 
             left_on='standard_concept_id', 
             right_on='concept_id', 
