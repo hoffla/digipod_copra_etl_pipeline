@@ -20,11 +20,14 @@ class VisitOccurrencePipeline(BasePipeline):
             df = pd.concat([updated_existing_visits, new_visits], ignore_index=True)
             df = self._expand_patient_intervals_by_patient(df)
             df = self.__createDateColumns(df)
-            df = self.__fillRequiredCols(df)
-            df = self._createUniqueID(df, ['person_id', 'casenumber', 'visit_start_datetime'], self.idCol)
-            df = self._adaptSchema(df)
+            df2 = df.copy()
+            df = self.__fillRequiredCols(df, 9201)
+            df2 = self.__fillRequiredCols(df2, 32037)
+            df = self._createUniqueID(df, ['person_id', 'casenumber', 'visit_start_datetime', 'visit_concept_id'], self.idCol)
+            d2 = self._createUniqueID(d2, ['person_id', 'casenumber', 'visit_start_datetime', 'visit_concept_id'], self.idCol)
+            processedDf = self._adaptSchema(df, df2)
 
-            return df.drop_duplicates()
+            return processedDf.drop_duplicates()
 
     def _collect_visit_data(self) -> pd.DataFrame:
         visit_data = [
@@ -139,7 +142,7 @@ class VisitOccurrencePipeline(BasePipeline):
         return df
 
     @staticmethod
-    def __fillRequiredCols(df):
+    def __fillRequiredCols(df, concept_id: int):
         df["visit_type_concept_id"] = conceptsIDs.get("visit_type_concept_id")
         df['visit_concept_id'] = 9201
         df['visit_source_value'] = 'Synthetic Data'
