@@ -18,13 +18,17 @@ class VisitOccurrencePipeline(BasePipeline):
             new_visits = self._process_and_update_new_patients(combined_df_withPersonID, visit_occurrence_df)
 
             df = pd.concat([updated_existing_visits, new_visits], ignore_index=True)
-            df = self._expand_patient_intervals_by_patient(df)
+            #df = self._expand_patient_intervals_by_patient(df)
             df = self.__createDateColumns(df)
             df2 = df.copy()
             df = self.__fillRequiredCols(df, 9201)
             df2 = self.__fillRequiredCols(df2, 32037)
-            df = self._createUniqueID(df, ['person_id', 'casenumber', 'visit_start_datetime', 'visit_concept_id'], self.idCol)
-            d2 = self._createUniqueID(d2, ['person_id', 'casenumber', 'visit_start_datetime', 'visit_concept_id'], self.idCol)
+
+            df['location'] = 'normalWard'
+            df2['location'] = 'ICU'
+
+            df = self._createUniqueID(df, ['person_id', 'casenumber', 'visit_start_datetime', 'visit_concept_id', 'location'], self.idCol)
+            df2 = self._createUniqueID(df2, ['person_id', 'casenumber', 'visit_start_datetime', 'visit_concept_id', 'location'], self.idCol)
             processedDf = self._adaptSchema(df, df2)
 
             return processedDf.drop_duplicates()
@@ -63,7 +67,7 @@ class VisitOccurrencePipeline(BasePipeline):
     def _adjust_intervals(self, new_visits: pd.DataFrame, existing_visits=pd.DataFrame(), adjust_weeks: int = 1) -> pd.DataFrame:
         min_visit, max_visit = self._extractMinMaxVals(new_visits, existing_visits)
 
-        adjusted_start = min_visit - timedelta(weeks=adjust_weeks)
+        adjusted_start = min_visit - timedelta(days=adjust_weeks) # If we trust users, maybe we can leave it as is
         adjusted_end = max_visit + timedelta(weeks=adjust_weeks)
 
         return pd.DataFrame({
@@ -144,6 +148,6 @@ class VisitOccurrencePipeline(BasePipeline):
     @staticmethod
     def __fillRequiredCols(df, concept_id: int):
         df["visit_type_concept_id"] = conceptsIDs.get("visit_type_concept_id")
-        df['visit_concept_id'] = 9201
+        df['visit_concept_id'] = concept_id
         df['visit_source_value'] = 'Synthetic Data'
         return df

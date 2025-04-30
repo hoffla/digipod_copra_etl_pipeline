@@ -42,9 +42,9 @@ class ProcedureOccurrencePipeline(BasePipeline):
     def __processCognition(self, df):
         if not df.empty:
             columns_to_expand = ["kog_erfolgt", "orientierung_erfolgt", "kommuni_erfolgt", "circrhy_wie___1"]
-            df = df[["visit_datetime", "casenumber"] + columns_to_expand].dropna()
-            df = self.__reshape_dataframe(df, columns_to_expand)
-            df = df[df['source_column'] != False]
+            df = df[["visit_datetime", "casenumber"] + columns_to_expand].copy()
+            df = self.__wide_to_long(df, ["visit_datetime", "casenumber"], columns_to_expand)
+            #df = df[df['source_column'] != False]
             df = self._addPersonID(df)
             df = self._createUniqueID(df, ['person_id', 'visit_datetime', 'source_column'], self.idCol)
             df = self._addOMOPConceptCols(df, localJoin='source_code')
@@ -152,3 +152,14 @@ class ProcedureOccurrencePipeline(BasePipeline):
     def __addMappings(df, col, mapping):
         df['procedure_source_value'] = df[col].replace(mapping)
         return df
+    
+    @staticmethod
+    def __wide_to_long(df, id_cols, cols_expand):
+        out = (
+            df.set_index(id_cols)[cols_expand]
+            .stack(dropna=True)                
+            .reset_index(name="value")
+            .rename(columns={"level_2": "source_column"})
+            .loc[lambda d: d["value"] != False]
+        )
+        return out

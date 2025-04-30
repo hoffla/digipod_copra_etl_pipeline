@@ -1,6 +1,6 @@
 import uuid
 import os
-import logging
+
 from flask import Flask, request
 
 import sys
@@ -25,7 +25,7 @@ def receive_xml():
     try:
         xml_data = request.get_data(as_text=False)
         if not xml_data.strip():
-            logging.warning("Empty request body.")
+            logger.warning("Empty request body.")
             return "Request body is empty.", 400
 
         unique_filename = f"{uuid.uuid4()}.xml"
@@ -34,14 +34,14 @@ def receive_xml():
         try:
             with open(xml_filename, 'wb') as xml_file:
                 xml_file.write(xml_data)
-            logging.info(f"XML saved successfully as {xml_filename}")
+            logger.info(f"XML saved successfully as {xml_filename}")
             return "XMLFile received successfully", 200
         except OSError as e:
-            logging.error(f"Failed to save XML: {str(e)}")
+            logger.error(f"Failed to save XML: {str(e)}")
             return f"Failed to save the XML on the server: {str(e)}", 500
 
     except Exception as e:
-        logging.error(f"Unexpected error: {str(e)}")
+        logger.error(f"Unexpected error: {str(e)}")
         return f"Unexpected error: {str(e)}", 500
     
 
@@ -51,7 +51,7 @@ def receive_xml_test():
     try:
         xml_data = request.get_data(as_text=False)
         if not xml_data.strip():
-            logging.warning("Empty request body.")
+            logger.warning("Empty request body.")
             return "Request body is empty.", 400
 
         unique_filename = f"{uuid.uuid4()}.xml"
@@ -60,17 +60,17 @@ def receive_xml_test():
         try:
             with open(xml_filename, 'wb') as xml_file:
                 xml_file.write(xml_data)
-            logging.info(f"XML saved successfully as {xml_filename}")
+            logger.info(f"XML saved successfully as {xml_filename}")
             return "XMLFile received successfully", 200
         except OSError as e:
-            logging.error(f"Failed to save XML: {str(e)}")
+            logger.error(f"Failed to save XML: {str(e)}")
             return f"Failed to save the XML on the server: {str(e)}", 500
 
     except Exception as e:
-        logging.error(f"Unexpected error: {str(e)}")
+        logger.error(f"Unexpected error: {str(e)}")
         return f"Unexpected error: {str(e)}", 500
 
 
 if __name__ == '__main__':
-    logging.info("Starting the XML receiving server.")
+    logger.info("Starting the XML receiving server.")
     app.run(debug=True)

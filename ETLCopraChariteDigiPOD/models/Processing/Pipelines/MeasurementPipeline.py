@@ -118,7 +118,7 @@ class MeasurementPipeline(BasePipeline):
     
     def __processASA(self, df):
         if "praemed_asa" in df.columns:
-            df = df[["praemed_asa"]].dropna()
+            df = df[["praemed_asa", "visit_datetime", "casenumber"]].dropna()
 
             if not df.empty:
                 df = self._addPersonID(df)

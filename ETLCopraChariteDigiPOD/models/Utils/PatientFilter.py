@@ -1,10 +1,14 @@
 from dataclasses import dataclass, field
 from datetime import datetime
+from typing import List
+
 import hashlib
 import json
 import os
-from typing import List
+import tempfile
+
 import pandas as pd
+
 from models.Preprocessing.Utils.XMLNavigator import XMLNavigator
 from models.PipelineStarter.event import post_event
 from models.Utils.SQLInteractor import getOrCreateSQLEngine
@@ -120,8 +124,12 @@ class PatientFilter:
         
         sent_cases[casenumber_hash] = datetime.now()
 
-        with open(self.hash_file, 'w') as file:
-            json.dump(sent_cases, file, indent=4)
+        dir_name = os.path.dirname(self.hash_file)
+        with tempfile.NamedTemporaryFile('w', dir=dir_name, delete=False) as tmp_file:
+            json.dump(sent_cases, tmp_file, indent=4)
+            temp_name = tmp_file.name
+
+        os.replace(temp_name, self.hash_file)
 
     def _identify_unmatched_cases(self, patient_data, casenumber_matches, patid_matches) -> pd.DataFrame:
         mask = ~patient_data["casenumber"].isin(casenumber_matches["casenumber"]) & patient_data["patient_id"].isin(patid_matches["patient_id"])

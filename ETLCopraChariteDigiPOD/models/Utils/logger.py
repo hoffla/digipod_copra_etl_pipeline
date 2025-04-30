@@ -6,6 +6,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 logsPath = os.path.join(os.getenv('BASEPATH'), os.getenv('PROJECTDIRECTORY'), os.getenv('LOG_DIR'))
+print(f"Logs path: {logsPath}")
 
 logging.config.dictConfig({
     'version': 1,
@@ -27,8 +28,8 @@ logging.config.dictConfig({
         'rotating_file': {
                 'class': 'logging.handlers.RotatingFileHandler',
                 'filename': os.path.join(logsPath, 'ETL_Pipeline.log'),
-                'maxBytes': 10485760,  # 10MB
-                'backupCount': 5,
+                'maxBytes': 52428800,  # 50MB
+                'backupCount': 15,
                 'formatter': 'standard',
         },
         'rotating_file_xml': {
