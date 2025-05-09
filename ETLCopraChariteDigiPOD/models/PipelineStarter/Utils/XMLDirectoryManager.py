@@ -47,7 +47,7 @@ class XMLDirectoryManager:
         if isinstance(xml_paths, Iterable) and not isinstance(xml_paths, (str, bytes)):
             for xml_path in xml_paths:
                 self._move_file(xml_path, directory)
-        elif xml_paths and isinstance(xml_paths, (str, bytes)):
+        elif xml_paths and isinstance(xml_paths, (Path, str, bytes)):
             self._move_file(xml_paths, directory)
 
     def _move_file(self, xml_path, destination_type: str):
