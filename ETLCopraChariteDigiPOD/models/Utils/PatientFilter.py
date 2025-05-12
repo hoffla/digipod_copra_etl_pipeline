@@ -33,6 +33,12 @@ Bitte prüfen Sie, ob diese Fallnummer zu unserem REDCap hinzugefügt werden sol
         }
 
 
+def convert_datetime(obj):
+    if isinstance(obj, datetime):
+        return obj.isoformat()
+    return obj
+
+
 @dataclass
 class PatientFilter:
     sqlEngine: object = field(init=False)
@@ -126,7 +132,7 @@ class PatientFilter:
 
         dir_name = os.path.dirname(self.hash_file)
         with tempfile.NamedTemporaryFile('w', dir=dir_name, delete=False) as tmp_file:
-            json.dump(sent_cases, tmp_file, indent=4)
+            json.dump(sent_cases, tmp_file, indent=4, default=convert_datetime)
             temp_name = tmp_file.name
 
         os.replace(temp_name, self.hash_file)
