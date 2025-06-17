@@ -59,12 +59,13 @@ class ProcedureOccurrencePipeline(BasePipeline):
 
             if not df.empty:
                 df = df[df["angst_bewaltigung_typ___1"] != False]
-                df = self._addPersonID(df)
-                df['source_column'] = "angst_bewaltigung_typ___1"
-                df = self._createUniqueID(df, ['person_id', 'visit_datetime', 'source_column'], self.idCol)
-                df = self._addOMOPConceptCols(df)
-                df = self.__addMappings(df, 'source_column', procedureMapping)
-                df.rename(columns={'visit_datetime': 'procedure_datetime'}, inplace=True)
+                if not df.empty:
+                    df = self._addPersonID(df)
+                    df['source_column'] = "angst_bewaltigung_typ___1"
+                    df = self._createUniqueID(df, ['person_id', 'visit_datetime', 'source_column'], self.idCol)
+                    df = self._addOMOPConceptCols(df)
+                    df = self.__addMappings(df, 'source_column', procedureMapping)
+                    df.rename(columns={'visit_datetime': 'procedure_datetime'}, inplace=True)
 
         return df
     

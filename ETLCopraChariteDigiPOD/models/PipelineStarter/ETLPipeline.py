@@ -103,9 +103,10 @@ class OMOPExtractTransformLoad:
 
         for tableName in tables:
             try:
-                dependencies = self.__getDependeciesForTable(rawData, tableName)
-                processedTable = self.pipelineManager.processData(dependencies, tableName)
-                post_event('updateTable', processedTable, tableName)
+                if tableName != 'visit_occurrence':
+                    dependencies = self.__getDependeciesForTable(rawData, tableName)
+                    processedTable = self.pipelineManager.processData(dependencies, tableName)
+                    post_event('updateTable', processedTable, tableName)
             except Exception as err:
                 self.__handleException(err, tableName, dependencies)
 
